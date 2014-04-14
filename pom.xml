@@ -24,6 +24,11 @@
 		</dependency>
 	</dependencies>
 
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://jenkins.imagej.net/job/Analyze_Reader_Writer/</url>
+	</ciManagement>
+
 	<scm>
 		<connection>scm:git:git://github.com/fiji/Analyze_Reader_Writer</connection>
 		<developerConnection>scm:git:git@github.com:fiji/Analyze_Reader_Writer</developerConnection>
