@@ -31,7 +31,7 @@
 			<artifactId>itextpdf</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${jpedal.groupId}</groupId>
+			<groupId>org.jpedal</groupId>
 			<artifactId>jpedalSTD</artifactId>
 		</dependency>
 		<dependency>
