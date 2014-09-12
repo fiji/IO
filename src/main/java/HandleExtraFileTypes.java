@@ -394,16 +394,14 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		// and then call appropriate plugin using the above as models
 		// e.g.:
 		
-		/*
-		// A. Dent: Added XYZ handler
-		// ----------------------------------------------
-		// check if the file ends in .xyz, and bytes 0 and 1 equal 42
-		if (name.endsWith(".xyz") && buf[0]==42 && buf[1]==42) {
-		// Ok we've identified the file type - now load it
-			return tryPlugIn("XYZ_Reader", path);
-		}
-		*/
-
+	//Jerome Parent : open .bin file with Koala_Bin_Reader plugin
+	// ----------------------------------------------
+	// check if the file ends in .bin
+	if (name.endsWith(".bin")) {
+	// Ok we've identified the file type - now load it
+		return tryPlugIn("ij.plugin.Koala_Bin_Reader", path);
+	}
+	
 		return null;
 	}
 
