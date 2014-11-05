@@ -1,16 +1,24 @@
 package io;
 
-import java.io.*;
-import java.util.*;  // for the Vector and Hashtable classes
-import ij.*;
-import ij.plugin.*;
-import ij.process.*;
-import ij.io.*;
-import ij.measure.*;
-import ij.gui.*;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.gui.GenericDialog;
+import ij.io.FileInfo;
+import ij.io.FileOpener;
+import ij.io.OpenDialog;
+import ij.measure.Calibration;
+import ij.plugin.PlugIn;
+import ij.process.ImageProcessor;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer; // for blreadDouble
 import java.nio.ByteOrder;
 //import ij.IJ.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;  // for the Vector and Hashtable classes
 
 // ------------------------------------------
 // DM3_Reader.java

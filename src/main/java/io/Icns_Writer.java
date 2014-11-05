@@ -1,23 +1,17 @@
 // Save the active image as .icns file
 package io;
 
+import iconsupport.icns.IcnsCodec;
+import iconsupport.icns.IconSuite;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
-
 import ij.io.SaveDialog;
-
 import ij.plugin.PlugIn;
 
-import java.awt.Image;
-
 import java.awt.image.BufferedImage;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import iconsupport.icns.IcnsCodec;
-import iconsupport.icns.IconSuite;
 
 public class Icns_Writer implements PlugIn {
 

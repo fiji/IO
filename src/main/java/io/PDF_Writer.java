@@ -4,9 +4,6 @@
 // - Makes 'resize to fit' aware of the option to print the name/size of image so that 'save one image per page' is respected with large images
 package io;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -16,10 +13,17 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import ij.*;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.Prefs;
+import ij.WindowManager;
 import ij.gui.GenericDialog;
-import ij.io.*;
-import ij.plugin.*;
+import ij.io.SaveDialog;
+import ij.plugin.PlugIn;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class PDF_Writer implements PlugIn {
 

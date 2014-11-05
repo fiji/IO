@@ -5,14 +5,11 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.LookUpTable;
 import ij.WindowManager;
-
 import ij.io.SaveDialog;
-
 import ij.plugin.PlugIn;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 
 public class LSS16_Writer implements PlugIn {
 

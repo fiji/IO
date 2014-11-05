@@ -12,7 +12,7 @@ package net.sf.image4j.codec.ico;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
-import net.sf.image4j.codec.bmp.BMPConstants;
+
 import net.sf.image4j.codec.bmp.BMPDecoder;
 import net.sf.image4j.codec.bmp.ColorEntry;
 import net.sf.image4j.codec.bmp.InfoHeader;

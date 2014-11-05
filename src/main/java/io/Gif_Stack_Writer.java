@@ -1,18 +1,21 @@
 package io;
 
-import java.io.*;
-import java.awt.*;
-import java.awt.image.*;
-import java.awt.Color;
-import java.awt.Point;
-import java.io.OutputStream;
-import java.io.IOException;
-
-import ij.*;
-import ij.io.*;
-import ij.gui.*;
-import ij.process.*;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.WindowManager;
+import ij.gui.GenericDialog;
+import ij.io.SaveDialog;
 import ij.plugin.PlugIn;
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
+
+import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 
 /**

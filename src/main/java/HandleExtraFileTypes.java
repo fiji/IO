@@ -1,6 +1,14 @@
-import ij.*;
-import ij.plugin.*;
-import java.io.*;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.Menus;
+import ij.plugin.PlugIn;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 // Plugin to handle file types which are not implemented

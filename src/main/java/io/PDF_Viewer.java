@@ -16,19 +16,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 You may contact Albert Cardona at acardona at ini phys ethz ch
 */
-import ij.plugin.PlugIn;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.io.OpenDialog;
-import ij.Menus;
-import ij.IJ;
 import ij.gui.GenericDialog;
+import ij.io.OpenDialog;
+import ij.plugin.PlugIn;
 import ij.process.ColorProcessor;
-import org.jpedal.PdfDecoder;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+
+import org.jpedal.PdfDecoder;
 
 
 

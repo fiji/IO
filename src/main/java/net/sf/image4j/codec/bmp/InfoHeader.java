@@ -10,7 +10,6 @@
 package net.sf.image4j.codec.bmp;
 
 import java.io.IOException;
-import net.sf.image4j.io.LittleEndianOutputStream;
 
 /**
  * Represents a bitmap <tt>InfoHeader</tt> structure, which provides header information.

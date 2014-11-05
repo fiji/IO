@@ -2,33 +2,20 @@ package io;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.GenericDialog;
+import ij.io.OpenDialog;
 import ij.plugin.PlugIn;
 
-import ij.gui.GenericDialog;
-
-import ij.io.OpenDialog;
-
 import java.awt.Rectangle;
-
 import java.awt.geom.AffineTransform;
-
-import java.awt.image.BufferedImage;
-
 import java.io.File;
 import java.io.IOException;
-
-import java.util.List;
 
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
-import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.bridge.ViewBox;
-import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.renderer.StaticRenderer;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
 

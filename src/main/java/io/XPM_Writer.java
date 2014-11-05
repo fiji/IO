@@ -5,9 +5,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.LookUpTable;
 import ij.WindowManager;
-
 import ij.io.SaveDialog;
-
 import ij.plugin.PlugIn;
 
 import java.io.FileOutputStream;

@@ -9,14 +9,9 @@
 
 package net.sf.image4j.util;
 
-import java.awt.AlphaComposite;
-import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.IndexColorModel;
 
 /**
  * Provides utility methods for handling images (<tt>java.awt.BufferedImage</tt>)

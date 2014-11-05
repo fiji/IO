@@ -1,19 +1,16 @@
 package io;
 
+import iconsupport.icns.IcnsCodec;
+import iconsupport.icns.IconSuite;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.plugin.PlugIn;
 import ij.io.OpenDialog;
+import ij.plugin.PlugIn;
 
 import java.awt.image.BufferedImage;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import iconsupport.icns.IcnsCodec;
-import iconsupport.icns.IconSuite;
 
 public class Icns_Reader extends ImagePlus implements PlugIn {
 

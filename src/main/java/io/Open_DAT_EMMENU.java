@@ -8,20 +8,15 @@ package io;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.gui.Roi;
-import ij.plugin.PlugIn;
 import ij.io.FileInfo;
 import ij.io.FileOpener;
 import ij.io.OpenDialog;
-import ij.plugin.ContrastEnhancer;
-import ij.process.ImageConverter;
-import ij.process.ImageProcessor;
-import java.util.Hashtable;
-import java.util.Enumeration;
+import ij.plugin.PlugIn;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class Open_DAT_EMMENU extends ImagePlus implements PlugIn {
 

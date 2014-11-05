@@ -4,15 +4,10 @@ package io;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
-
 import ij.io.SaveDialog;
-
 import ij.plugin.PlugIn;
 
-import java.awt.Image;
-
 import java.awt.image.BufferedImage;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 

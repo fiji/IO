@@ -7,15 +7,14 @@
 
 package io;
 
-import org.jpedal.PdfDecoder;
-import org.jpedal.objects.PdfImageData;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.plugin.PlugIn;
-import ij.io.OpenDialog;
-import java.io.File;
-import java.io.FileInputStream;
+
 import java.awt.image.BufferedImage;
+
+import org.jpedal.PdfDecoder;
+import org.jpedal.objects.PdfImageData;
 
 /** Extract all images from a PDF file (or from an URL given as argument),
  *  and open them all within ImageJ in their original resolution.

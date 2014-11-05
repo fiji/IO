@@ -2,15 +2,12 @@ package io;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.plugin.PlugIn;
 import ij.io.OpenDialog;
+import ij.plugin.PlugIn;
 
 import java.awt.image.BufferedImage;
-
 import java.io.File;
 import java.io.IOException;
-
 import java.util.List;
 
 import net.sf.image4j.codec.ico.ICODecoder;

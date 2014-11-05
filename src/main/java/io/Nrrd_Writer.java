@@ -29,15 +29,22 @@ package io;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.VirtualStack;
 import ij.WindowManager;
 import ij.io.FileInfo;
-import ij.VirtualStack;
 import ij.io.ImageWriter;
 import ij.io.SaveDialog;
 import ij.measure.Calibration;
 import ij.plugin.PlugIn;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Date;
 import java.util.zip.GZIPOutputStream;
 

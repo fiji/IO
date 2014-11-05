@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.io.IOException;
+
 import net.sf.image4j.io.LittleEndianOutputStream;
 
 /**

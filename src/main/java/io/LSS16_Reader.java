@@ -2,16 +2,11 @@ package io;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
-
+import ij.io.OpenDialog;
 import ij.plugin.PlugIn;
-
 import ij.process.ByteProcessor;
 
-import ij.io.OpenDialog;
-
 import java.awt.image.IndexColorModel;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

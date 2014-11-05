@@ -21,6 +21,8 @@ package io;
 // All rights reserved
 // Source code released under Lesser Gnu Public License v2
 
+import com.jcraft.jzlib.ZInputStream;
+
 import ij.IJ;
 import ij.io.FileInfo;
 import ij.io.FileOpener;
@@ -29,8 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.zip.GZIPInputStream;
-
-import com.jcraft.jzlib.ZInputStream;
 
 class FlexibleFileOpener extends FileOpener {
 	

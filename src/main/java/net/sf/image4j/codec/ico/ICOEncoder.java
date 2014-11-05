@@ -15,11 +15,13 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.List;
+
 import javax.imageio.ImageWriter;
-import net.sf.image4j.io.LittleEndianOutputStream;
+
 import net.sf.image4j.codec.bmp.BMPEncoder;
-import net.sf.image4j.util.ConvertUtil;
 import net.sf.image4j.codec.bmp.InfoHeader;
+import net.sf.image4j.io.LittleEndianOutputStream;
+import net.sf.image4j.util.ConvertUtil;
 
 /**
  * Encodes images in ICO format.

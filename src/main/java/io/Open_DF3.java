@@ -25,18 +25,18 @@ package io;
  * @version 0.1b
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-
-import ij.io.OpenDialog;
-import ij.plugin.*;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.process.ImageProcessor;
+import ij.io.OpenDialog;
+import ij.plugin.PlugIn;
 import ij.process.ByteProcessor;
-import ij.process.ShortProcessor;
 import ij.process.FloatProcessor;
-import ij.IJ;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
+
+import java.io.File;
+import java.io.FileInputStream;
 
 public class Open_DF3 implements PlugIn 
 {

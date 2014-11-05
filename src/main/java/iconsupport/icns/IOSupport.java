@@ -32,7 +32,10 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package iconsupport.icns;
 
-import java.io.*;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 class IOSupport {
     public static final int LONG_INT_SIZE = 4;

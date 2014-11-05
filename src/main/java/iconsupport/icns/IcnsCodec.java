@@ -32,10 +32,14 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package iconsupport.icns;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.awt.*;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class IcnsCodec {
     private static final String ICNS = "icns";

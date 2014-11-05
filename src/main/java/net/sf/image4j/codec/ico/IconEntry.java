@@ -1,6 +1,7 @@
 package net.sf.image4j.codec.ico;
 
 import java.io.IOException;
+
 import net.sf.image4j.io.LittleEndianInputStream;
 
 /**

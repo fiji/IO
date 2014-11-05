@@ -1,10 +1,19 @@
 package io;
 
-import ij.plugin.*;
-import ij.*;
-import ij.io.*;
-import ij.process.*;
-import java.io.*;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.io.FileInfo;
+import ij.io.FileOpener;
+import ij.io.OpenDialog;
+import ij.io.RandomAccessStream;
+import ij.plugin.PlugIn;
+import ij.process.ImageConverter;
+import ij.process.ImageProcessor;
+import ij.process.StackConverter;
+
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /** This plugin opens images in the IPLab/Windows (.IPL)  format. */
 public class IPLab_Reader extends ImagePlus implements PlugIn {

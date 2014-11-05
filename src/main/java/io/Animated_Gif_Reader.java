@@ -1,14 +1,20 @@
 package io;
 
-import ij.plugin.*;
-import ij.*;
-import ij.process.*;
-import ij.io.*;
-import java.net.*;
-import java.io.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.io.OpenDialog;
+import ij.plugin.PlugIn;
+import ij.process.ColorProcessor;
+import ij.process.ImageProcessor;
+
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Vector;
 
 public class Animated_Gif_Reader implements PlugIn {
 	public void run(String arg) {

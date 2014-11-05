@@ -26,18 +26,18 @@ package io;
  * @version 0.1b
  */
 
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.io.InputStream;
-
-import ij.plugin.*;
-import ij.gui.GenericDialog;
-import ij.io.SaveDialog;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.process.ImageProcessor;
 import ij.WindowManager;
-import ij.IJ;
+import ij.gui.GenericDialog;
+import ij.io.SaveDialog;
+import ij.plugin.PlugIn;
+import ij.process.ImageProcessor;
+
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 
 public class Save_DF3 implements PlugIn 
 {
