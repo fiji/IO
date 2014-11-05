@@ -1,11 +1,18 @@
-import java.io.*; 
-import java.awt.*; 
-import ij.*; 
-import ij.gui.*; 
-import ij.plugin.*;
-import ij.process.*;
-import ij.io.*;
-import ij.measure.Calibration;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.WindowManager;
+import ij.io.FileInfo;
+import ij.io.FileSaver;
+import ij.io.SaveDialog;
+import ij.plugin.PlugIn;
+import ij.process.ImageProcessor;
+import ij.process.ImageStatistics;
+
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 //	This plugin saves Analyze format files.  
 //	It appends the '.img' and '.hdr' suffixes to the image and header files

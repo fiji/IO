@@ -1,10 +1,15 @@
-import java.io.*; 
-import java.awt.*; 
-import ij.*; 
-import ij.plugin.*;
-import ij.process.*;
-import ij.io.*;
-import ij.measure.*;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.io.FileInfo;
+import ij.io.FileOpener;
+import ij.io.OpenDialog;
+import ij.plugin.PlugIn;
+import ij.process.ImageProcessor;
+
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /** This plugin loads Analyze format files.  
     It parses the header file found in '<filename>.hdr' and uses this to 
