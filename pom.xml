@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>sc.fiji</groupId>
 		<artifactId>pom-fiji</artifactId>
-		<version>2.0.0-beta-0</version>
+		<version>5.0.2</version>
 		<relativePath />
 	</parent>
 
@@ -19,13 +19,32 @@
 	<description></description>
 
 	<dependencies>
-		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik</artifactId>
-		</dependency>
+		<!-- ImageJ dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-common</artifactId>
+		</dependency>
+
+		<!-- ImgLib2 dependencies -->
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-ij</artifactId>
+		</dependency>
+
+		<!-- SCIFIO dependencies -->
+		<dependency>
+			<groupId>io.scif</groupId>
+			<artifactId>scifio</artifactId>
+		</dependency>
+
+		<!-- Third party dependencies -->
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.itextpdf</groupId>
@@ -38,18 +57,6 @@
 		<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jzlib</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.scif</groupId>
-			<artifactId>scifio</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imglib2</groupId>
-			<artifactId>imglib2-ij</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imglib2</groupId>
-			<artifactId>imglib2-meta</artifactId>
 		</dependency>
 	</dependencies>
 
