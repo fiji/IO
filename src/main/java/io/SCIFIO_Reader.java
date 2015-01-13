@@ -8,8 +8,8 @@ import io.scif.img.IO;
 
 import java.io.File;
 
+import net.imagej.ImgPlus;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.meta.ImgPlus;
 
 /**
  * Opens images using SCIFIO.
