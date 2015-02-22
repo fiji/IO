@@ -41,7 +41,7 @@ FITNESS FOR ANY PARTICULAR PURPOSE.
 //02: make mha read correctly: 
 //    1. only feed header to Propoerties.load() because load() interprets unicode escape sequences which are likely to occure in data part
 //    2. only feed data to InflaterInputStream, therefore skip header on the exact byte count
-//03: support for not compressed mha, clean up, optimization, ByteOrder fitting ITK
+//03: support for not compressed mha, clean up, optimization, ByteOrder fitting ITK, 64bit float support
 
 import java.io.*;
 import java.util.*;
@@ -322,6 +322,7 @@ public class MetaImage_Reader implements PlugIn {
             else if (strElementType.equals("MET_INT"))    { fi.fileType = FileInfo.GRAY32_INT;      }
             else if (strElementType.equals("MET_UINT"))   { fi.fileType = FileInfo.GRAY32_UNSIGNED; }
             else if (strElementType.equals("MET_FLOAT"))  { fi.fileType = FileInfo.GRAY32_FLOAT;    }
+            else if (strElementType.equals("MET_DOUBLE")) { fi.fileType = FileInfo.GRAY64_FLOAT;    }
             else {
                 throw new IOException(
                     "Unsupported element type: " +
@@ -345,8 +346,10 @@ public class MetaImage_Reader implements PlugIn {
         }
 
         if (strElementDataFile != null && strElementDataFile.length() > 0) {
-          if (strElementDataFile.equals("LOCAL"))
+            if (strElementDataFile.equals("LOCAL")){
               fi.fileName = headerName;
+                //IJ.log("Detected local data storage!" + fi.fileName);
+                }
             else
               fi.fileName = strElementDataFile;
         }

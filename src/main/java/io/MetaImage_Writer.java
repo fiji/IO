@@ -37,6 +37,7 @@ FITNESS FOR ANY PARTICULAR PURPOSE.
 
 ////extionsions by Roman Grothausmann:
 //01: ByteOrder fitting ITK
+//02: MHD/MHA-bug resoved
 
 import java.io.*;
 import java.awt.*;
@@ -50,6 +51,119 @@ import ij.measure.Calibration;
 //  This plugin saves MetaImage format files.
 //  It appends the '.mhd' and '.raw' suffixes to the header and data files, respectively.
 //
+
+
+////from: http://imagej.nih.gov/ij/developer/source/ij/io/FileSaver.java.html
+class ExtendedFileSaver extends FileSaver {
+
+    private ImagePlus mimp;
+    private FileInfo mfi;
+
+
+    public ExtendedFileSaver (ImagePlus imp) {
+        super(imp);
+        this.mimp = imp;
+        mfi = imp.getFileInfo();
+
+    }
+   
+    void showErrorMessage(IOException e) {
+        String msg = e.getMessage();
+        if (msg.length()>100)
+            msg = msg.substring(0, 100);
+        error("An error occured writing the file.\n \n" + msg);
+    }
+    
+    private void error(String msg) {
+        IJ.error("FileSaver", msg);
+    }
+
+    /** Save the image as raw data using the specified path. */
+    public boolean saveAsRaw(String path) {
+        mfi.nImages = 1;
+        mfi.intelByteOrder = Prefs.intelByteOrder;
+        boolean signed16Bit = false;
+        short[] pixels = null;
+        int n = 0;
+        try {
+            signed16Bit = mimp.getCalibration().isSigned16Bit();
+            if (signed16Bit) {
+                pixels = (short[])mimp.getProcessor().getPixels();
+                n = mimp.getWidth()*mimp.getHeight();
+                for (int i=0; i<n; i++)
+                    pixels[i] = (short)(pixels[i]-32768);
+            }
+	    OutputStream out;
+	    if(path.endsWith(".mha"))//append
+		out= new BufferedOutputStream(new FileOutputStream(path, true));
+	    else
+		out= new BufferedOutputStream(new FileOutputStream(path));
+            ImageWriter file = new ImageWriter(mfi);
+            file.write(out);
+            out.close();
+        }
+        catch (IOException e) {
+            showErrorMessage(e);
+            return false;
+        }
+        if (signed16Bit) {
+            for (int i=0; i<n; i++)
+            pixels[i] = (short)(pixels[i]+32768);
+        }
+        //updateImp(mfi, mfi.RAW);
+        return true;
+    }
+
+    /** Save the stack as raw data using the specified path. */
+    public boolean saveAsRawStack(String path) {
+        if (mfi.nImages==1)
+            {IJ.error("This is not a stack"); return false;}
+        mfi.intelByteOrder = Prefs.intelByteOrder;
+        boolean signed16Bit = false;
+        Object[] stack = null;
+        int n = 0;
+        boolean virtualStack = mimp.getStackSize()>1 && mimp.getStack().isVirtual();
+        if (virtualStack) {
+            mfi.virtualStack = (VirtualStack)mimp.getStack();
+            if (mimp.getProperty("AnalyzeFormat")!=null) mfi.fileName="FlipTheseImages";
+        }
+        try {
+            signed16Bit = mimp.getCalibration().isSigned16Bit();
+            if (signed16Bit && !virtualStack) {
+                stack = (Object[])mfi.pixels;
+                n = mimp.getWidth()*mimp.getHeight();
+                for (int slice=0; slice<mfi.nImages; slice++) {
+                    short[] pixels = (short[])stack[slice];
+                    for (int i=0; i<n; i++)
+                        pixels[i] = (short)(pixels[i]-32768);
+                }
+            }
+	    OutputStream out;
+	    if(path.endsWith(".mha"))//append
+		out= new BufferedOutputStream(new FileOutputStream(path, true));
+	    else
+		out= new BufferedOutputStream(new FileOutputStream(path));
+            ImageWriter file = new ImageWriter(mfi);
+            file.write(out);
+            out.close();
+        }
+        catch (IOException e) {
+            showErrorMessage(e);
+            return false;
+        }
+        if (signed16Bit) {
+            for (int slice=0; slice<mfi.nImages; slice++) {
+                short[] pixels = (short[])stack[slice];
+                for (int i=0; i<n; i++)
+                    pixels[i] = (short)(pixels[i]+32768);
+            }
+        }
+        //updateImp(mfi, mfi.RAW);
+        return true;
+    }
+
+}
+
 
 public final class MetaImage_Writer implements PlugIn {
 
@@ -66,7 +180,7 @@ public final class MetaImage_Writer implements PlugIn {
         String dir = "", baseName = "";
         if (arg == null || arg.length() == 0) {
             SaveDialog sd = new SaveDialog(
-              "Save as MetaImage", imp.getTitle(), ".mhd");
+              "Save as MetaImage", imp.getTitle(), "");
             dir = sd.getDirectory();
             baseName = sd.getFileName();
         }
@@ -85,10 +199,6 @@ public final class MetaImage_Writer implements PlugIn {
         if (baseName == null || baseName.length() == 0)
             return;
 
-        int baseLength = baseName.length();
-        String lowerBaseName = baseName.toLowerCase();
-        if (lowerBaseName.endsWith(".mhd") || lowerBaseName.endsWith(".mda"))
-            baseName = baseName.substring(0, baseLength - 4);
         save(imp, dir, baseName);
         IJ.showStatus(baseName + " saved");
     }
@@ -96,21 +206,36 @@ public final class MetaImage_Writer implements PlugIn {
 
     private void save(ImagePlus imp, String dir, String baseName) {
 
+	String headerName;
+	String dataName;
+
+        String lowerBaseName = baseName.toLowerCase();
+        if (lowerBaseName.endsWith(".mha")){
+	    headerName = baseName;
+	    dataName = baseName;
+	}
+	else if (lowerBaseName.endsWith(".mhd")){
+	    baseName= baseName.substring(0, baseName.length() - 4);
+	    headerName = baseName + ".mhd";
+	    dataName = baseName + ".raw";
+	}
+	else {
+	    headerName = baseName + ".mha";
+	    dataName = baseName + ".mha";
+	}
+
         if (!dir.endsWith(File.separator) && dir.length() > 0)
             dir += File.separator;
 
         try {
-            // Save header file.
-            String headerName = baseName + ".mhd";
-            String dataName = baseName + ".raw";
             IJ.showStatus("Saving " + headerName + "...");
             if (writeHeader(imp, dir + headerName, dataName)) {
                 // Save data file.
                 IJ.showStatus("Writing " + dataName + "...");
                 if (imp.getStackSize() > 1)
-                    new FileSaver(imp).saveAsRawStack(dir + dataName);
+                    new ExtendedFileSaver(imp).saveAsRawStack(dir + dataName);
                 else
-                    new FileSaver(imp).saveAsRaw(dir + dataName);
+                    new ExtendedFileSaver(imp).saveAsRaw(dir + dataName);
             }
         }
         catch (IOException e) {
@@ -172,6 +297,11 @@ public final class MetaImage_Writer implements PlugIn {
         if (numChannels != "1")
             stream.println("ElementNumberOfChannels = " + numChannels);
         stream.println("ElementType = " + type);
+
+
+        if (dataFile.endsWith(".mha"))
+	    stream.println("ElementDataFile = LOCAL");
+	else
         stream.println("ElementDataFile = " + dataFile);
 
         stream.close();

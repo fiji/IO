@@ -39,6 +39,7 @@ FITNESS FOR ANY PARTICULAR PURPOSE.
 //01: implemented writing zlib compressed MHDs (i.e. .zraw)
 //02: implemented saving data locally, i.e. MHAs; ByteOrder fitting ITK
 //02b: added dummy header entry "CompressedDataSize = 9999999999999" with which ITK only reports a warning
+//02c: MHD/MHA-bug resoved
 
 //todo
 // -add CompressedDataSize to header (without ITK aborts on decompression)
@@ -64,13 +65,15 @@ import java.util.zip.DeflaterOutputStream;
 //  It appends the '.mhd' and '.raw' suffixes to the header and data files, respectively.
 //
 
-class ExtendedFileSaver extends FileSaver {
+
+////from: http://imagej.nih.gov/ij/developer/source/ij/io/FileSaver.java.html
+class DeflateExtendedFileSaver extends FileSaver {
 
     private ImagePlus mimp;
     private FileInfo mfi;
 
 
-    public ExtendedFileSaver (ImagePlus imp) {
+    public DeflateExtendedFileSaver (ImagePlus imp) {
         super(imp);
         this.mimp = imp;
         mfi = imp.getFileInfo();
@@ -193,10 +196,9 @@ public final class MetaImage_CWriter implements PlugIn {
         String dir = "", baseName = "";
         if (arg == null || arg.length() == 0) {
             SaveDialog sd = new SaveDialog(
-                "Save as compressed MetaImage", imp.getTitle(), ".mhd");
+                "Save as compressed MetaImage", imp.getTitle(), "");
             dir = sd.getDirectory();
             baseName = sd.getFileName();
-	    //IJ.log("baseName " + baseName);
         }
         else {
             File file = new File(arg);
@@ -228,10 +230,14 @@ public final class MetaImage_CWriter implements PlugIn {
 	    headerName = baseName;
 	    dataName = baseName;
 	}
-	else{
+	else if (lowerBaseName.endsWith(".mhd")){
 	    baseName= baseName.substring(0, baseName.length() - 4);
 	    headerName = baseName + ".mhd";
-	    dataName = baseName + ".zraw";
+	    dataName = baseName + ".raw";
+	}
+	else {
+	    headerName = baseName + ".mha";
+	    dataName = baseName + ".mha";
 	}
 
         if (!dir.endsWith(File.separator) && dir.length() > 0)
@@ -243,9 +249,9 @@ public final class MetaImage_CWriter implements PlugIn {
                 // Save data file.
                 IJ.showStatus("Writing " + dataName + "...");
                 if (imp.getStackSize() > 1)
-                    new ExtendedFileSaver(imp).saveAsRawStack(dir + dataName);
+                    new DeflateExtendedFileSaver(imp).saveAsRawStack(dir + dataName);
                 else
-                    new ExtendedFileSaver(imp).saveAsRaw(dir + dataName);
+                    new DeflateExtendedFileSaver(imp).saveAsRaw(dir + dataName);
             }
         }
         catch (IOException e) {
@@ -315,7 +321,7 @@ public final class MetaImage_CWriter implements PlugIn {
         if (dataFile.endsWith(".mha"))
 	    stream.println("ElementDataFile = LOCAL");
 	else
-        stream.println("ElementDataFile = " + dataFile);
+	    stream.println("ElementDataFile = " + dataFile);
 
         stream.close();
         file.close();
