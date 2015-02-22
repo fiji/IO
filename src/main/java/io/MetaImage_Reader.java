@@ -1,3 +1,5 @@
+package io;
+
 /**
     MetaImage reader plugin for ImageJ.
 
@@ -34,12 +36,69 @@ WARRANTY OF ANY KIND CONCERNING  THE MERCHANTABILITY OF THIS SOFTWARE  OR ITS
 FITNESS FOR ANY PARTICULAR PURPOSE.
 */
 
+////extionsions by Roman Grothausmann:
+//01: also handle compressed data with InflaterInputStream
+//02: make mha read correctly: 
+//    1. only feed header to Propoerties.load() because load() interprets unicode escape sequences which are likely to occure in data part
+//    2. only feed data to InflaterInputStream, therefore skip header on the exact byte count
+//03: support for not compressed mha, clean up, optimization, ByteOrder fitting ITK
+
 import java.io.*;
 import java.util.*;
 import ij.*;
 import ij.plugin.*;
 import ij.process.*;
 import ij.io.*;
+
+import java.util.zip.InflaterInputStream;
+import java.net.*;
+import java.awt.image.*;
+import ij.gui.*;
+
+class ExtendedFileOpener extends FileOpener {
+    // private class which determines if the file is gzipped or not
+    // and adds a GZIPInputStream if required
+    public ExtendedFileOpener(FileInfo fi) {
+        super(fi);
+    }
+   
+    public InputStream createInputStream(FileInfo fi) throws IOException, MalformedURLException {
+        // use the method in the FileOpener class to generate an inputstream
+        InputStream is= super.createInputStream(fi);
+        if (is!= null && fi.fileName.toLowerCase().endsWith(".zraw")) {
+            // then stick a InflaterInputStream on top of it!
+            //IJ.log("File ends with .zraw");
+            return new InflaterInputStream(is);
+            } 
+        else if(is!= null && fi.fileName.toLowerCase().endsWith(".mha")){
+            ////need to skip header exactly, so do NOT use a buffered reader as InputStreamReader or BufferedReader!!!!
+            //IJ.log("File ends with .mha");
+            String line= "";
+            int c;
+            long bc= 0;
+            do{
+                line= "";
+                do{ //read a line icluding \n
+                    if((c= is.read()) < 0){
+                        IJ.error("Header ended unexpectedly! Aborting at byte: " + bc);
+                        System.exit(1);
+                        }
+                    bc++;
+                    line+= (char)c; //cast very important otherwise int (number) is converted to str.
+                    } while (c != '\n');
+                //IJ.log("Line: " + line);
+                } while(!line.startsWith("ElementDataFile"));
+            //IJ.log("Header length: " + bc);
+            return new InflaterInputStream(is);
+            }
+        else {
+            // Just return plain input stream
+            return is;
+            }
+        }
+
+}
+
 
 public class MetaImage_Reader implements PlugIn {
 
@@ -163,9 +222,17 @@ public class MetaImage_Reader implements PlugIn {
               impOut = new ImagePlus(baseName, stackOut);
                 impOut.setStack(null, stackOut);
             }
+	    //handling compressed data
+            else if (fi.compression == FileInfo.COMPRESSION_UNKNOWN){ //sadly there is no FileInfo.GZIP therefore FlexibleFileOpener is used
+                IJ.showStatus("Reading zlib-compressed " + fi.fileName + "...");
+                //IJ.log("Reading zlib-compressed " + fi.fileName + "...");
+		ExtendedFileOpener opener = new ExtendedFileOpener(fi); //use ExtendedFileOpener which adds ".zraw" as InflaterInputStream to FileOpener
+		impOut= opener.open(false);//uses createInputStream which now handles zlib compression
+                }
             else {
                 if (fi.longOffset < 0)
                     fi.longOffset = getOffset(fi);
+                //IJ.log("Reading not compressed " + fi.fileName + "...");
                 IJ.showStatus("Reading " + fi.fileName + "...");
                 FileOpener opener = new FileOpener(fi);
                 impOut = opener.open(false);
@@ -191,7 +258,18 @@ public class MetaImage_Reader implements PlugIn {
         fi.fileFormat = FileInfo.RAW;
 
         Properties p = new Properties();
-        p.load(new FileInputStream(dir + headerName));
+        ////for mha it is necessary to only pass the header to properties
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(dir + headerName)));
+        String header= "";
+        String line= "";
+        do {
+            line = in.readLine();
+            header+= line + "\n";
+        }while(line!= null && !line.startsWith("ElementDataFile"));
+        //IJ.log("Header: " + header);
+        long header_size= header.length();
+        p.load(new ByteArrayInputStream(header.getBytes("ISO-8859-1"))); //load expects "ISO-8859-1" from a stream: http://docs.oracle.com/javase/7/docs/api/java/util/Properties.html#load%28java.io.InputStream%29
+
         String strObjectType = p.getProperty("ObjectType");
         String strNDims = p.getProperty("NDims");
         String strDimSize = p.getProperty("DimSize");
@@ -203,6 +281,7 @@ public class MetaImage_Reader implements PlugIn {
         String strElementNumberOfChannels = p.getProperty("ElementNumberOfChannels", "1");
         String strElementType = p.getProperty("ElementType", "MET_NONE");
         String strHeaderSize = p.getProperty("HeaderSize", "0");
+	String strCompressedData = p.getProperty("CompressedData");
 
         if (strObjectType == null || !strObjectType.equalsIgnoreCase("Image"))
             throw new IOException("The specified file does not contain an image.");
@@ -287,8 +366,19 @@ public class MetaImage_Reader implements PlugIn {
             else
                 fi.intelByteOrder = true;
         }
+	//store compression info strCompressedData
+        if (strCompressedData != null) {
+            if (strCompressedData.length() > 0
+                && (strCompressedData.charAt(0) == 'T' ||
+                    strCompressedData.charAt(0) == 't' ||
+                    strCompressedData.charAt(0) == '1')) 
+                ////no FileInfo.ZLIB: http://rsbweb.nih.gov/ij/developer/api/constant-values.html#ij.io.FileInfo.ZIP
+		fi.compression = FileInfo.COMPRESSION_UNKNOWN; //FileOpener.createInputStream will return null which will cause the ExtendedFileOpener to check for .zraw ;-)
+       }
 
         fi.longOffset = (long)Integer.parseInt(strHeaderSize);
+        if(local && fi.compression != FileInfo.COMPRESSION_UNKNOWN)
+            fi.longOffset+= header_size;
 
         return fi;
     }

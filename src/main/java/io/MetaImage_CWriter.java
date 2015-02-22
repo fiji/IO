@@ -36,7 +36,18 @@ FITNESS FOR ANY PARTICULAR PURPOSE.
 */
 
 ////extionsions by Roman Grothausmann:
-//01: ByteOrder fitting ITK
+//01: implemented writing zlib compressed MHDs (i.e. .zraw)
+//02: implemented saving data locally, i.e. MHAs; ByteOrder fitting ITK
+//02b: added dummy header entry "CompressedDataSize = 9999999999999" with which ITK only reports a warning
+
+//todo
+// -add CompressedDataSize to header (without ITK aborts on decompression)
+//  seems this can only be done after DeflaterOutputStream has written all bytes
+//  however, the line for CompressedDataSize has to be inserted into the header
+//  this can be done writing a new file or by insertion
+//  extending a file in java is cumbersum so replacing a dummy string instead might be best for MHAs
+//  i.e. write a header with CompressedDataSize = abcdefgUVWXYZ
+//  and after DeflaterOutputStream has finished replace abcdefgUVWXYZ by # of written bytes
 
 import java.io.*;
 import java.awt.*;
@@ -47,11 +58,127 @@ import ij.plugin.*;
 import ij.process.*;
 import ij.measure.Calibration;
 
+import java.util.zip.DeflaterOutputStream;
+
 //  This plugin saves MetaImage format files.
 //  It appends the '.mhd' and '.raw' suffixes to the header and data files, respectively.
 //
 
-public final class MetaImage_Writer implements PlugIn {
+class ExtendedFileSaver extends FileSaver {
+
+    private ImagePlus mimp;
+    private FileInfo mfi;
+
+
+    public ExtendedFileSaver (ImagePlus imp) {
+        super(imp);
+        this.mimp = imp;
+        mfi = imp.getFileInfo();
+
+    }
+   
+    void showErrorMessage(IOException e) {
+        String msg = e.getMessage();
+        if (msg.length()>100)
+            msg = msg.substring(0, 100);
+        error("An error occured writing the file.\n \n" + msg);
+    }
+    
+    private void error(String msg) {
+        IJ.error("FileSaver", msg);
+    }
+
+
+        /** Save the image as raw data using the specified path. */
+    public boolean saveAsRaw(String path) {
+        mfi.nImages = 1;
+        mfi.intelByteOrder = Prefs.intelByteOrder;
+        boolean signed16Bit = false;
+        short[] pixels = null;
+        int n = 0;
+        try {
+            signed16Bit = mimp.getCalibration().isSigned16Bit();
+            if (signed16Bit) {
+                pixels = (short[])mimp.getProcessor().getPixels();
+                n = mimp.getWidth()*mimp.getHeight();
+                for (int i=0; i<n; i++)
+                    pixels[i] = (short)(pixels[i]-32768);
+                }
+	    OutputStream out;
+	    if(path.endsWith(".mha"))//append
+		out= new DeflaterOutputStream(new FileOutputStream(path, true));
+	    else
+		out= new DeflaterOutputStream(new FileOutputStream(path));
+            ImageWriter file = new ImageWriter(mfi);
+            file.write(out);
+            out.close();
+            }
+        catch (IOException e) {
+            showErrorMessage(e);
+            return false;
+            }
+        if (signed16Bit) {
+            for (int i=0; i<n; i++)
+                pixels[i] = (short)(pixels[i]+32768);
+            }
+        //updateImp(fi, fi.RAW);
+        //updateImp(mfi, mfi.COMPRESSION_UNKNOWN);
+        return true;
+        }
+   
+
+    /** Save the stack as raw data using the specified path. */
+    public boolean saveAsRawStack(String path) {
+        if (mfi.nImages==1)
+            {IJ.error("This is not a stack"); return false;}
+        mfi.intelByteOrder = Prefs.intelByteOrder;
+        boolean signed16Bit = false;
+        Object[] stack = null;
+        int n = 0;
+        boolean virtualStack = mimp.getStackSize()>1 && mimp.getStack().isVirtual();
+        if (virtualStack) {
+            mfi.virtualStack = (VirtualStack)mimp.getStack();
+            if (mimp.getProperty("AnalyzeFormat")!=null) mfi.fileName="FlipTheseImages";
+            }
+        try {
+            signed16Bit = mimp.getCalibration().isSigned16Bit();
+            if (signed16Bit && !virtualStack) {
+                stack = (Object[])mfi.pixels;
+                n = mimp.getWidth()*mimp.getHeight();
+                for (int slice=0; slice<mfi.nImages; slice++) {
+                    short[] pixels = (short[])stack[slice];
+                    for (int i=0; i<n; i++)
+                        pixels[i] = (short)(pixels[i]-32768);
+                    }
+                }
+	    OutputStream out;
+	    if(path.endsWith(".mha"))//append
+		out= new DeflaterOutputStream(new FileOutputStream(path, true));
+	    else
+		out= new DeflaterOutputStream(new FileOutputStream(path));
+            ImageWriter file = new ImageWriter(mfi);
+            file.write(out);
+            out.close();
+            }
+        catch (IOException e) {
+            showErrorMessage(e);
+            return false;
+            }
+        if (signed16Bit) {
+            for (int slice=0; slice<mfi.nImages; slice++) {
+                short[] pixels = (short[])stack[slice];
+                for (int i=0; i<n; i++)
+                    pixels[i] = (short)(pixels[i]+32768);
+                }
+            }
+        //updateImp(mfi, mfi.COMPRESSION_UNKNOWN);
+        return true;
+        }
+
+    }
+
+
+public final class MetaImage_CWriter implements PlugIn {
 
     public void run(String arg) {
         ImagePlus imp = WindowManager.getCurrentImage();
@@ -66,9 +193,10 @@ public final class MetaImage_Writer implements PlugIn {
         String dir = "", baseName = "";
         if (arg == null || arg.length() == 0) {
             SaveDialog sd = new SaveDialog(
-              "Save as MetaImage", imp.getTitle(), ".mhd");
+                "Save as compressed MetaImage", imp.getTitle(), ".mhd");
             dir = sd.getDirectory();
             baseName = sd.getFileName();
+	    //IJ.log("baseName " + baseName);
         }
         else {
             File file = new File(arg);
@@ -85,10 +213,6 @@ public final class MetaImage_Writer implements PlugIn {
         if (baseName == null || baseName.length() == 0)
             return;
 
-        int baseLength = baseName.length();
-        String lowerBaseName = baseName.toLowerCase();
-        if (lowerBaseName.endsWith(".mhd") || lowerBaseName.endsWith(".mda"))
-            baseName = baseName.substring(0, baseLength - 4);
         save(imp, dir, baseName);
         IJ.showStatus(baseName + " saved");
     }
@@ -96,21 +220,32 @@ public final class MetaImage_Writer implements PlugIn {
 
     private void save(ImagePlus imp, String dir, String baseName) {
 
+	String headerName;
+	String dataName;
+
+        String lowerBaseName = baseName.toLowerCase();
+        if (lowerBaseName.endsWith(".mha")){
+	    headerName = baseName;
+	    dataName = baseName;
+	}
+	else{
+	    baseName= baseName.substring(0, baseName.length() - 4);
+	    headerName = baseName + ".mhd";
+	    dataName = baseName + ".zraw";
+	}
+
         if (!dir.endsWith(File.separator) && dir.length() > 0)
             dir += File.separator;
 
         try {
-            // Save header file.
-            String headerName = baseName + ".mhd";
-            String dataName = baseName + ".raw";
             IJ.showStatus("Saving " + headerName + "...");
             if (writeHeader(imp, dir + headerName, dataName)) {
                 // Save data file.
                 IJ.showStatus("Writing " + dataName + "...");
                 if (imp.getStackSize() > 1)
-                    new FileSaver(imp).saveAsRawStack(dir + dataName);
+                    new ExtendedFileSaver(imp).saveAsRawStack(dir + dataName);
                 else
-                    new FileSaver(imp).saveAsRaw(dir + dataName);
+                    new ExtendedFileSaver(imp).saveAsRaw(dir + dataName);
             }
         }
         catch (IOException e) {
@@ -160,6 +295,9 @@ public final class MetaImage_Writer implements PlugIn {
             stream.println("BinaryDataByteOrderMSB = False");
 	else
             stream.println("BinaryDataByteOrderMSB = True");
+	    
+        stream.println("CompressedData = True");
+        stream.println("CompressedDataSize = 9999999999999"); 
 
         if (ndims == 3) {
             stream.println("DimSize = " + fi.width + " " + fi.height + " " + fi.nImages);
@@ -172,6 +310,11 @@ public final class MetaImage_Writer implements PlugIn {
         if (numChannels != "1")
             stream.println("ElementNumberOfChannels = " + numChannels);
         stream.println("ElementType = " + type);
+
+
+        if (dataFile.endsWith(".mha"))
+	    stream.println("ElementDataFile = LOCAL");
+	else
         stream.println("ElementDataFile = " + dataFile);
 
         stream.close();
