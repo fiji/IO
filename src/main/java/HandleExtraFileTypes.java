@@ -400,6 +400,13 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 	    return tryPlugIn("io.MetaImage_Reader", path);
 	}
 
+        //Jerome Parent : open .bin file with Koala_Bin_Reader plugin
+        // ----------------------------------------------
+        // check if the file ends in .bin
+        if (name.endsWith(".bin")) {
+            return tryPlugIn("io.Koala_Bin_Reader", path);
+        }
+
         //Samuel Inverso: open raw files with raw file plugin 
         if (name.endsWith(".raw"))
         {
