@@ -390,6 +390,16 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
             return tryPlugIn("edu.utexas.clm.archipelago.Fiji_Archipelago", path);
         }
 
+	// Roman Grothausmann: read metaimages (ITK) with MetaImage_Reader
+	if (name.endsWith(".mhd")) {
+	    //ij.IJ.log("Found MHD, trying MetaImage_Reader...");
+	    return tryPlugIn("io.MetaImage_Reader", path);
+	}
+	if (name.endsWith(".mha")) {
+	    //ij.IJ.log("Found MHA, trying MetaImage_Reader...");
+	    return tryPlugIn("io.MetaImage_Reader", path);
+	}
+
         //Samuel Inverso: open raw files with raw file plugin 
         if (name.endsWith(".raw"))
         {
