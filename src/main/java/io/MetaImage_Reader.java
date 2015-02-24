@@ -331,8 +331,8 @@ public class MetaImage_Reader implements PlugIn {
             }
         }
         else if (numChannels == 3) {
-            if (strElementType.equals("MET_UCHAR_ARRAY")) fi.fileType = FileInfo.RGB;
-            else if (strElementType.equals("MET_USHORT_ARRAY"))
+            if (strElementType.equals("MET_UCHAR") || strElementType.equals("MET_UCHAR_ARRAY")) fi.fileType = FileInfo.RGB;
+            else if (strElementType.equals("MET_USHORT") || strElementType.equals("MET_USHORT_ARRAY"))
                 fi.fileType = FileInfo.RGB48;
             else {
                 throw new IOException(
