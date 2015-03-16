@@ -80,6 +80,9 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		// also copy the Show Info field over if it exists
 		if (imp.getProperty("Info") != null)
 			setProperty("Info", imp.getProperty("Info"));
+		// also copy the subtitle ("Label") field over if it exists
+		if (imp.getProperty("Label") != null)
+		    setProperty("Label", imp.getProperty("Label"));
 		// copy over the FileInfo
 		setFileInfo(imp.getOriginalFileInfo());
 		// copy dimensions
