@@ -415,8 +415,13 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
         {
             return tryPlugIn("ij.plugin.Raw", path);
         }
-       
-       
+
+		//Tobias Pietzsch, HongKee Moon: open .bdv file with BigDataBrowserPlugIn
+		if ( name.endsWith( ".bdv" ) )
+		{
+			return tryPlugIn( "bdv.ij.BigDataBrowserPlugIn", path );
+		}
+
 		// ****************** MODIFY HERE ******************
 		// do what ever you have to do to recognise your own file type
 		// and then call appropriate plugin using the above as models
