@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.zip.GZIPInputStream;
 
 // Plugin to handle file types which are not implemented
@@ -27,96 +29,105 @@ import java.util.zip.GZIPInputStream;
 // jefferis@stanford.edu
 
 /**
- * Plugin to handle file types which are not implemented
- * directly in ImageJ through io.Opener.
+ * Plugin to handle file types which are not implemented directly in ImageJ
+ * through io.Opener.
  */
 public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
+
 	static final int IMAGE_OPENED = -1;
 	static final int PLUGIN_NOT_FOUND = -2;
 	static final boolean LOCI_PRESENT = checkForLoci();
 
 	private static boolean checkForLoci() {
 		// This should run without exception in headless mode
-		boolean lociPresent=true;
+		boolean lociPresent = true;
 		try {
-			lociPresent = IJ.getClassLoader().loadClass("loci.plugins.LociImporter") != null;
+			lociPresent =
+				IJ.getClassLoader().loadClass("loci.plugins.LociImporter") != null;
 		}
-		catch (ClassNotFoundException e) {
+		catch (final ClassNotFoundException e) {
 			lociPresent = false;
 		}
-		if(IJ.debugMode) IJ.log("HEFT: loci is"+(lociPresent?" ":" not ")+"present");
+		if (IJ.debugMode) {
+			IJ.log("HEFT: loci is" + (lociPresent ? " " : " not ") + "present");
+		}
 		return lociPresent;
 	}
 
 	/** Called from io/Opener.java. */
-	public void run(String path) {
+	@Override
+	public void run(final String path) {
 
 		if (path.equals("")) return;
-		File theFile = new File(path);
-		String fileName = theFile.getName();
+		final File theFile = new File(path);
+		final String fileName = theFile.getName();
 		String directory = theFile.getParent();
 		if (directory == null) directory = "";
 		else {
 			directory = directory.replace('\\', '/');
-			if (!directory.endsWith("/"))
-				directory += "/";
+			if (!directory.endsWith("/")) directory += "/";
 		}
 
 		// Try and recognise file type and load the file if recognised
-		ImagePlus imp = openImage(directory, fileName, path);
-		if (imp==null) {
+		final ImagePlus imp = openImage(directory, fileName, path);
+		if (imp == null) {
 			// failed to load file or plugin has opened and displayed it
 			IJ.showStatus("");
 			return; // failed to load file or plugin has opened and displayed it
 		}
-		ImageStack stack = imp.getStack();
+		final ImageStack stack = imp.getStack();
 		// fetch the title from the stack (falling back to the fileName)
-		String title=imp.getTitle().equals("")?fileName:imp.getTitle();
+		final String title = imp.getTitle().equals("") ? fileName : imp.getTitle();
 		// set the stack of this HandleExtraFileTypes object
 		// to that attached to the ImagePlus object returned by openImage()
 		setStack(title, stack);
-		// copy over the calibration info since it doesn't come with the ImageProcessor
+		// copy over calibration info since it doesn't come with the ImageProcessor
 		setCalibration(imp.getCalibration());
 		// also copy the Show Info field over if it exists
-		if (imp.getProperty("Info") != null)
+		if (imp.getProperty("Info") != null) {
 			setProperty("Info", imp.getProperty("Info"));
+		}
 		// also copy the subtitle ("Label") field over if it exists
-		if (imp.getProperty("Label") != null)
-		    setProperty("Label", imp.getProperty("Label"));
+		if (imp.getProperty("Label") != null) {
+			setProperty("Label", imp.getProperty("Label"));
+		}
 		// copy over the FileInfo
 		setFileInfo(imp.getOriginalFileInfo());
 		// copy dimensions
-		if (IJ.getVersion().compareTo("1.38s")>=0)
+		if (IJ.getVersion().compareTo("1.38s") >= 0) {
 			setDimensions(imp.getNChannels(), imp.getNSlices(), imp.getNFrames());
-		if (IJ.getVersion().compareTo("1.41o")>=0)
+		}
+		if (IJ.getVersion().compareTo("1.41o") >= 0) {
 			setOpenAsHyperStack(imp.getOpenAsHyperStack());
+		}
 	}
-	
 
-	private Object tryOpen(String directory, String name, String path) {
+	private Object
+		tryOpen(final String directory, String name, final String path)
+	{
 		// set up a stream to read in 132 bytes from the file header
 		// These can be checked for "magic" values which are diagnostic
 		// of some image types
 		InputStream is;
-		byte[] buf = new byte[132];
+		final byte[] buf = new byte[132];
 		try {
-			if (0 == path.indexOf("http://"))
-				is = new java.net.URL(path).openStream();
-			else
-				is = new FileInputStream(path);
+			if (0 == path.indexOf("http://")) is = new URL(path).openStream();
+			else is = new FileInputStream(path);
 			is.read(buf, 0, 132);
 			is.close();
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			// couldn't open the file for reading
 			return null;
 		}
 		name = name.toLowerCase();
 		width = PLUGIN_NOT_FOUND;
 
-		// Temporarily suppress "plugin not found" errors if LOCI Bio-Formats plugin is installed
-		if (IJ.getVersion().compareTo("1.37u")>=0 && LOCI_PRESENT)
+		// Temporarily suppress "plugin not found" errors if LOCI Bio-Formats plugin
+		// is installed
+		if (IJ.getVersion().compareTo("1.37u") >= 0 && LOCI_PRESENT) {
 			IJ.suppressPluginNotFoundError();
+		}
 
 		// OK now we get to the interesting bit
 
@@ -124,29 +135,34 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		// ------------------------------------------
 		// These make 12345 if you read them as the right kind of short
 		// and should have this value in every Biorad PIC file
-		if (name.endsWith(".pic.gz") || buf[54]==57 && buf[55]==48) {
+		if (name.endsWith(".pic.gz") || buf[54] == 57 && buf[55] == 48) {
 			return tryPlugIn("Biorad_Reader", path);
 		}
 		// GJ: added Gatan Digital Micrograph DM3 handler
 		// ----------------------------------------------
 		// check if the file ends in .DM3 or .dm3,
 		// and bytes make an int value of 3 which is the DM3 version number
-		if (name.endsWith(".dm3") && buf[0]==0 && buf[1]==0 && buf[2]==0 && buf[3]==3) {
+		if (name.endsWith(".dm3") && buf[0] == 0 && buf[1] == 0 && buf[2] == 0 &&
+			buf[3] == 3)
+		{
 			return tryPlugIn("io.DM3_Reader", path);
 		}
 
 		// IPLab file handler
 		// Little-endian IPLab files start with "iiii" or "mmmm".
 		if (name.endsWith(".ipl") ||
-			(buf[0]==105 && buf[1]==105 && buf[2]==105 && buf[3]==105) ||
-			(buf[0]==109 && buf[1]==109 && buf[2]==109 && buf[3]==109)) {
-				return tryPlugIn("io.IPLab_Reader", path);
+			(buf[0] == 105 && buf[1] == 105 && buf[2] == 105 && buf[3] == 105) ||
+			(buf[0] == 109 && buf[1] == 109 && buf[2] == 109 && buf[3] == 109))
+		{
+			return tryPlugIn("io.IPLab_Reader", path);
 		}
 
 		// Packard InstantImager format (.img) handler -> check HERE
 		// before Analyze check below!
 		// Check extension and signature bytes KAJ_
-		if (name.endsWith(".img") && buf[0]==75 && buf[1]==65 && buf[2]==74 && buf[3]==0) {
+		if (name.endsWith(".img") && buf[0] == 75 && buf[1] == 65 && buf[2] == 74 &&
+			buf[3] == 0)
+		{
 			return tryPlugIn("InstantImager_Reader", path);
 		}
 
@@ -156,15 +172,16 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		// the Analyze_Reader plugin opens and displays the
 		// image and does not implement the ImagePlus class.
 		if (name.endsWith(".img") || name.endsWith(".hdr")) {
-			if (Menus.getCommands().get("NIfTI-Analyze")!=null)
+			if (Menus.getCommands().get("NIfTI-Analyze") != null) {
 				return tryPlugIn("Nifti_Reader", path);
-			else
-				return tryPlugIn("Analyze_Reader", path);
+			}
+			return tryPlugIn("Analyze_Reader", path);
 		}
 
 		// NIFTI format (.nii) handler
-		if (name.endsWith(".nii") || name.endsWith( ".nii.gz" ) ||
-				name.endsWith(".nii.z")) {
+		if (name.endsWith(".nii") || name.endsWith(".nii.gz") ||
+			name.endsWith(".nii.z"))
+		{
 			return tryPlugIn("Nifti_Reader", path);
 		}
 
@@ -184,16 +201,18 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		// http://rsb.info.nih.gov/ij/plugins/lsm-reader.html
 		if (name.endsWith(".lsm")) {
 			Object obj = tryPlugIn("LSM_Reader", path);
-			if (obj==null && Menus.getCommands().get("Show LSMToolbox")!=null)
-				obj = tryPlugIn("LSM_Toolbox", "file="+path);
+			if (obj == null && Menus.getCommands().get("Show LSMToolbox") != null) {
+				obj = tryPlugIn("LSM_Toolbox", "file=" + path);
+			}
 			return obj;
 		}
 
 		// BM: added Bruker file handler 29.07.04
 		if (name.equals("ser") || name.equals("fid") || name.equals("2rr") ||
-		name.equals("2ii") || name.equals("3rrr") || name.equals("3iii") ||
-		name.equals("2dseq")) {
-			ij.IJ.showStatus("Opening Bruker " + name + " File");
+			name.equals("2ii") || name.equals("3rrr") || name.equals("3iii") ||
+			name.equals("2dseq"))
+		{
+			IJ.showStatus("Opening Bruker " + name + " File");
 			return tryPlugIn("BrukerOpener", name + "|" + path);
 		}
 
@@ -217,13 +236,18 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		// University of North Carolina (UNC) file format handler
 		// 'magic' numbers are (int) offsets to data structures and
 		// may change in future releases.
-		if (name.endsWith(".unc") || (buf[3]==117 && buf[7]==-127 && buf[11]==36 && buf[14]==32 && buf[15]==-127)) {
+		if (name.endsWith(".unc") ||
+			(buf[3] == 117 && buf[7] == -127 && buf[11] == 36 && buf[14] == 32 && buf[15] == -127))
+		{
 			return tryPlugIn("UNC_Reader", path);
 		}
 
-		// Albert Cardona: read .mrc files (little endian). Documentation at: http://ami.scripps.edu/prtl_data/mrc_specification.htm . The parsing of the header is a bare minimum of what could be done.
+		// Albert Cardona: read .mrc files (little endian). Documentation at:
+		// http://ami.scripps.edu/prtl_data/mrc_specification.htm
+		// The parsing of the header is a bare minimum of what could be done.
 		if (name.endsWith(".mrc") || name.endsWith(".rec") ||
-				name.endsWith(".st") || name.endsWith(".tmg")) {
+			name.endsWith(".st") || name.endsWith(".tmg"))
+		{
 			return tryPlugIn("io.Open_MRC_Leginon", path);
 		}
 
@@ -234,7 +258,8 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		}
 
 		// Albert Cardona: read .dat files from the EMMENU software
-		if (name.endsWith(".dat") && 1 == buf[1] && 0 == buf[2]) { // 'new format' only
+		// 'new format' only
+		if (name.endsWith(".dat") && 1 == buf[1] && 0 == buf[2]) {
 			return tryPlugIn("io.Open_DAT_EMMENU", path);
 		}
 
@@ -245,15 +270,20 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 				GZIPInputStream gz = null;
 				b = new byte[132];
 				try {
-					gz = new GZIPInputStream(new BufferedInputStream(new FileInputStream(path)));
+					gz =
+						new GZIPInputStream(new BufferedInputStream(new FileInputStream(
+							path)));
 					gz.read(b, 0, 132);
-				} catch (Exception gze) {
+				}
+				catch (final Exception gze) {
 					gze.printStackTrace();
 					return null;
-				} finally {
+				}
+				finally {
 					try {
 						gz.close();
-					} catch (IOException gzioe) {
+					}
+					catch (final IOException gzioe) {
 						gzioe.printStackTrace();
 						return null;
 					}
@@ -262,26 +292,30 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 			if (-1 != new String(b).toLowerCase().indexOf("trakem2")) {
 				try {
 					// portable way, resists absence of TrakEM2_.jar in the classpath
-					final Class cla = Class.forName("ini.trakem2.Project");
+					final Class<?> cla = Class.forName("ini.trakem2.Project");
 					if (null != cla) {
-						final java.lang.reflect.Method method = cla.getMethod("openFSProject", new Class[]{String.class});
-						method.invoke(null, new Object[]{path});
+						final Method method = cla.getMethod("openFSProject", String.class);
+						method.invoke(null, path);
 					}
 					// assume success in any case
 					width = IMAGE_OPENED;
-				} catch (Exception e) {
+				}
+				catch (final Exception e) {
 					e.printStackTrace();
 				}
 				return null;
 			}
 		}
 
-		// Stephan Saalfeld: read .df3 files. Documentation at: http://www.povray.org/documentation/view/3.6.1/374/
+		// Stephan Saalfeld: read .df3 files. Documentation at:
+		// http://www.povray.org/documentation/view/3.6.1/374/
 		if (name.endsWith(".df3")) {
 			return tryPlugIn("io.Open_DF3", path);
 		}
 
-		if (name.endsWith(".dat") && buf[0] == -45 && buf[1] == -19 && buf[2] == -11 && buf[3] == -14) {
+		if (name.endsWith(".dat") && buf[0] == -45 && buf[1] == -19 &&
+			buf[2] == -11 && buf[3] == -14)
+		{
 			return tryPlugIn("io.FIBSEM_Reader", path);
 		}
 
@@ -291,68 +325,71 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		}
 
 		// Greg Jefferis: open nrrd images
-		// see Nrrd_Reader code or 
-		// http://teem.sourceforge.net/nrrd/
+		// see Nrrd_Reader code or http://teem.sourceforge.net/nrrd/
 		try {
-			String nrrdMagic=new String(buf,0,7,"US-ASCII");
-			if(nrrdMagic.equals("NRRD000")) {
+			final String nrrdMagic = new String(buf, 0, 7, "US-ASCII");
+			if (nrrdMagic.equals("NRRD000")) {
 				// Ok we've identified the file type - now load it
 				return tryPlugIn("io.Nrrd_Reader", path);
 			}
-		} catch (Exception e) {
 		}
+		catch (final Exception e) {}
 		// Greg Jefferis added Torsten Rohlfing binary file handler
 		// ----------------------------------------------
 		// Check if the file ends in .bin or in the case
 		// of the gzip compressed version .bin.gz
-		if (name.toLowerCase().endsWith(".bin") || 
-		    name.toLowerCase().endsWith(".bin.gz") ) {
-			// Since those filenames are not particularly specific, do a bit more checking
+		if (name.toLowerCase().endsWith(".bin") ||
+			name.toLowerCase().endsWith(".bin.gz"))
+		{
+			// Since those filenames are not very specific, do a bit more checking
 			// These files come in pairs as follows:
 			// T1_SABB4flip01_warp_m0g40c4e1e-1x16r3/image.bin.gz
 			// T1_SABB4flip01_warp_m0g40c4e1e-1x16r3.study/images
-			String dirWithoutSeparator=directory;
-			if(directory.endsWith(File.separator)){
-			    dirWithoutSeparator=directory.substring(0,directory.length()-1);
+			String dirWithoutSeparator = directory;
+			if (directory.endsWith(File.separator)) {
+				dirWithoutSeparator = directory.substring(0, directory.length() - 1);
 			}
-			File studyDir = new File(dirWithoutSeparator+".study");
+			final File studyDir = new File(dirWithoutSeparator + ".study");
 
-			if(studyDir.isDirectory())
-    			// Ok we've identified the file type - now load it
-    			return tryPlugIn("io.TorstenRaw_GZ_Reader",path);			    
-		}	
+			if (studyDir.isDirectory())
+			// Ok we've identified the file type - now load it
+			return tryPlugIn("io.TorstenRaw_GZ_Reader", path);
+		}
 
 		// Johannes Schindelin: open one or more images in a .ico file
-		if (name.endsWith(".ico"))
-			return tryPlugIn("io.ICO_Reader", path);
+		if (name.endsWith(".ico")) return tryPlugIn("io.ICO_Reader", path);
 
 		// Johannes Schindelin: open one or more images in a .icns file
-		if (name.endsWith(".icns"))
-			return tryPlugIn("io.Icns_Reader", path);
+		if (name.endsWith(".icns")) return tryPlugIn("io.Icns_Reader", path);
 
 		// Johannes Schindelin: render an .svg image into an ImagePlus
-		if (name.endsWith(".svg"))
-			return tryPlugIn("io.SVG_Reader", path);
+		if (name.endsWith(".svg")) return tryPlugIn("io.SVG_Reader", path);
 
 		// Johannes Schindelin: open an LSS16 (SYSLINUX) image
-		if (name.endsWith(".lss"))
-			return tryPlugIn("io.LSS16_Reader", path);
+		if (name.endsWith(".lss")) return tryPlugIn("io.LSS16_Reader", path);
 
 		// Johannes Schindelin: handle scripts
-		if (name.endsWith(".py"))
+		if (name.endsWith(".py")) {
 			return tryPlugIn("Jython.Refresh_Jython_Scripts", path);
-		if (name.endsWith(".rb"))
+		}
+		if (name.endsWith(".rb")) {
 			return tryPlugIn("JRuby.Refresh_JRuby_Scripts", path);
-		if (name.endsWith(".js"))
+		}
+		if (name.endsWith(".js")) {
 			return tryPlugIn("Javascript.Refresh_Javascript_Scripts", path);
-		if (name.endsWith(".clj"))
+		}
+		if (name.endsWith(".clj")) {
 			return tryPlugIn("Clojure.Refresh_Clojure_Scripts", path);
-		if (name.endsWith(".bs") || name.endsWith(".bsh"))
+		}
+		if (name.endsWith(".bs") || name.endsWith(".bsh")) {
 			return tryPlugIn("BSH.Refresh_BSH_Scripts", path);
+		}
 
-        // Larry Lindsey: Convert a Reconstruct .ser file into a TrakEM2 .xml file and open
-		if (name.endsWith(".ser"))
-			return tryPlugIn("edu.utexas.clm.reconstructreader.reconstruct.Reconstruct_Reader", path);
+		// Larry Lindsey: Convert a Reconstruct .ser file into a TrakEM2 .xml file
+		if (name.endsWith(".ser")) {
+			return tryPlugIn(
+				"edu.utexas.clm.reconstructreader.reconstruct.Reconstruct_Reader", path);
+		}
 
 		// Timo Rantalainen and Michael Doube: read Stratec pQCT files.
 		// File naming convention is IDDDDDDD.MHH, where D is decimal and H is hex
@@ -361,138 +398,142 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		}
 
 		if (name.endsWith(".obj") || name.endsWith(".dxf") || name.endsWith(".stl"))
+		{
 			return tryPlugIn("ImageJ_3D_Viewer", path);
+		}
 
 		// Christopher Bruns: Read V3DRAW files from Vaa3D application
+		// Supported formats:
+		// * Peng uncompressed format
+		// * Murphy pack-bits/difference compressed format
+		// Myers variant (.v3draw, .v3dpbd) not yet supported
 		try {
-			String vaa3dCookie = new String(buf, 0, 24);
-			if ( vaa3dCookie.equals("raw_image_stack_by_hpeng") // Peng uncompressed format 
-			  || vaa3dCookie.equals("v3d_volume_pkbitdf_encod") // Murphy pack-bits/difference compressed format
-			  // NOTE Myers variant not supported yet in this reader
-			  // || name.endsWith(".v3draw") // uncompressed format 
-			  // || name.endsWith(".v3dpbd") // pack-bits/difference compressed format
-					) 
+			final String vaa3dCookie = new String(buf, 0, 24);
+			if (vaa3dCookie.equals("raw_image_stack_by_hpeng") ||
+				vaa3dCookie.equals("v3d_volume_pkbitdf_encod"))
 			{
 				return tryPlugIn("org.janelia.vaa3d.reader.Vaa3d_Reader", path);
 			}
-		} catch (Exception exc) {}
+		}
+		catch (final Exception exc) {}
 
-		//Michael Doube: read Scanco ISQ files
-		//File name is ADDDDDDD.ISQ;D where D is a decimal and A is a letter
+		// Michael Doube: read Scanco ISQ files
+		// File name is ADDDDDDD.ISQ;D where D is a decimal and A is a letter
 		try {
-			String isqMagic=new String(buf,0,16,"UTF-8");
-			if (name.matches("[a-z]\\d{7}.isq;\\d+")
-			  || isqMagic.equals("CTDATA-HEADER_V1"))
+			final String isqMagic = new String(buf, 0, 16, "UTF-8");
+			if (name.matches("[a-z]\\d{7}.isq;\\d+") ||
+				isqMagic.equals("CTDATA-HEADER_V1"))
+			{
 				return tryPlugIn("org.bonej.io.ISQReader", path);
-		} catch (Exception e){}
-		
-        
-        //Larry Lindsey: open Archipelago cluster configuration file        
-        if (name.endsWith(".arc"))
-        {
-            return tryPlugIn("edu.utexas.clm.archipelago.Fiji_Archipelago", path);
-        }
+			}
+		}
+		catch (final Exception e) {}
 
-	// Roman Grothausmann: read metaimages (ITK) with MetaImage_Reader
-	if (name.endsWith(".mhd")) {
-	    //ij.IJ.log("Found MHD, trying MetaImage_Reader...");
-	    return tryPlugIn("io.MetaImage_Reader", path);
-	}
-	if (name.endsWith(".mha")) {
-	    //ij.IJ.log("Found MHA, trying MetaImage_Reader...");
-	    return tryPlugIn("io.MetaImage_Reader", path);
-	}
+		// Larry Lindsey: open Archipelago cluster configuration file
+		if (name.endsWith(".arc")) {
+			return tryPlugIn("edu.utexas.clm.archipelago.Fiji_Archipelago", path);
+		}
 
-        //Jerome Parent : open .bin file with Koala_Bin_Reader plugin
-        // ----------------------------------------------
-        // check if the file ends in .bin
-        if (name.endsWith(".bin")) {
-            return tryPlugIn("io.Koala_Bin_Reader", path);
-        }
+		// Roman Grothausmann: read metaimages (ITK) with MetaImage_Reader
+		if (name.endsWith(".mhd")) {
+			// IJ.log("Found MHD, trying MetaImage_Reader...");
+			return tryPlugIn("io.MetaImage_Reader", path);
+		}
+		if (name.endsWith(".mha")) {
+			// IJ.log("Found MHA, trying MetaImage_Reader...");
+			return tryPlugIn("io.MetaImage_Reader", path);
+		}
 
-        //Samuel Inverso: open raw files with raw file plugin 
-        if (name.endsWith(".raw"))
-        {
-            return tryPlugIn("ij.plugin.Raw", path);
-        }
-       
-       
-        // Les Foster: read HHMI/Janelia Research Campus' HDF5 format.
-        if (name.endsWith(".h5j")) {
-            return tryPlugIn("org.janelia.it.fiji.plugins.h5j.H5j_Reader", path);
-        }
+		// Jerome Parent : open .bin file with Koala_Bin_Reader plugin
+		// ----------------------------------------------
+		// check if the file ends in .bin
+		if (name.endsWith(".bin")) {
+			return tryPlugIn("io.Koala_Bin_Reader", path);
+		}
 
-        // ****************** MODIFY HERE ******************
+		// Samuel Inverso: open raw files with raw file plugin
+		if (name.endsWith(".raw")) {
+			return tryPlugIn("ij.plugin.Raw", path);
+		}
+
+		// Les Foster: read HHMI/Janelia Research Campus' HDF5 format.
+		if (name.endsWith(".h5j")) {
+			return tryPlugIn("org.janelia.it.fiji.plugins.h5j.H5j_Reader", path);
+		}
+
+		// ****************** MODIFY HERE ******************
 		// do what ever you have to do to recognise your own file type
 		// and then call appropriate plugin using the above as models
 		// e.g.:
-		
+
 		/*
 		// A. Dent: Added XYZ handler
 		// ----------------------------------------------
 		// check if the file ends in .xyz, and bytes 0 and 1 equal 42
-		if (name.endsWith(".xyz") && buf[0]==42 && buf[1]==42) {
-		// Ok we've identified the file type - now load it
+		if (name.endsWith(".xyz") && buf[0] == 42 && buf[1] == 42) {
+			// Ok we've identified the file type - now load it
 			return tryPlugIn("XYZ_Reader", path);
 		}
 		*/
-        
-        return null;
+
+		return null;
 	}
 
-	private ImagePlus openImage(String directory, String name, String path) {
-		Object o = tryOpen(directory, name, path);
+	private ImagePlus openImage(final String directory, final String name,
+		final String path)
+	{
+		final Object o = tryOpen(directory, name, path);
 		// if an image was returned, assume success
-		if (o instanceof ImagePlus) return (ImagePlus)o;
+		if (o instanceof ImagePlus) return (ImagePlus) o;
 
 		// tryPlugIn sets width to IMAGE_OPENED when a plugin that does not
 		// extend ImagePlus successfully opens the image
 		if (width == IMAGE_OPENED) return null;
 
-		// try opening the file with LOCI Bio-Formats plugin - always check this last!
-		// Do not call Bio-Formats if File>Import>Image Sequence is opening this file.
-		if (o==null && (IJ.getVersion().compareTo("1.38j")<0||!IJ.redirectingErrorMessages()) && (new File(path).exists())) {
-			Object loci = IJ.runPlugIn("loci.plugins.LociImporter", path);
-			if (loci!=null) {
+		// try opening the file with Bio-Formats plugin - always check this last!
+		// Do not call Bio-Formats if File>Import>Image Sequence is being used.
+		if (o == null &&
+			(IJ.getVersion().compareTo("1.38j") < 0 || !IJ.redirectingErrorMessages()) &&
+			(new File(path).exists()))
+		{
+			final Object loci = IJ.runPlugIn("loci.plugins.LociImporter", path);
+			if (loci != null) {
 				// plugin exists and was launched
 				try {
 					// check whether plugin was successful
-					Class c = loci.getClass();
-					boolean success = c.getField("success").getBoolean(loci);
-					boolean canceled = c.getField("canceled").getBoolean(loci);
+					final Class<?> c = loci.getClass();
+					final boolean success = c.getField("success").getBoolean(loci);
+					final boolean canceled = c.getField("canceled").getBoolean(loci);
 					if (success || canceled) {
 						width = IMAGE_OPENED;
 						return null;
 					}
 				}
-				catch (Exception exc) { }
+				catch (final Exception exc) {}
 			}
 		}
 
 		return null;
-		
-	} // openImage
+	}
 
 	/**
-	* Attempts to open the specified path with the given plugin.
-	*
-	* @return A reference to the plugin, if it was successful.
-	*/
-	private Object tryPlugIn(String className, String path) {
+	 * Attempts to open the specified path with the given plugin.
+	 *
+	 * @return A reference to the plugin, if it was successful.
+	 */
+	private Object tryPlugIn(final String className, final String path) {
 		Object o = IJ.runPlugIn(className, path);
 		if (o instanceof ImagePlus) {
 			// plugin extends ImagePlus class
-			ImagePlus imp = (ImagePlus)o;
-				if (imp.getWidth()==0)
-					o = null; // invalid image
-				else
-					width = IMAGE_OPENED; // success
-		} else if (o != null) {
+			final ImagePlus imp = (ImagePlus) o;
+			if (imp.getWidth() == 0) o = null; // invalid image
+			else width = IMAGE_OPENED; // success
+		}
+		else if (o != null) {
 			// plugin was run but does not extend ImagePlus; assume success
 			width = IMAGE_OPENED;
 		} // ... else plugin was not run/found
 		return o;
 	}
-
 
 }
