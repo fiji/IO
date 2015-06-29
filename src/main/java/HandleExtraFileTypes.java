@@ -417,7 +417,12 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
         }
        
        
-		// ****************** MODIFY HERE ******************
+        // Les Foster: read HHMI/Janelia Research Campus' HDF5 format.
+        if (name.endsWith(".h5j")) {
+            return tryPlugIn("org.janelia.it.fiji.plugins.h5j.H5j_Reader", path);
+        }
+
+        // ****************** MODIFY HERE ******************
 		// do what ever you have to do to recognise your own file type
 		// and then call appropriate plugin using the above as models
 		// e.g.:
@@ -431,8 +436,8 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 			return tryPlugIn("XYZ_Reader", path);
 		}
 		*/
-
-		return null;
+        
+        return null;
 	}
 
 	private ImagePlus openImage(String directory, String name, String path) {
