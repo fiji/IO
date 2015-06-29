@@ -535,7 +535,14 @@ public class DM3_Reader extends ImagePlus implements PlugIn
 		// Get the dimensions of the image for the chosen image
 		// I'm assuming they are ordered width then height
 		fi.width = ((Integer) tagHash.get(IMGLIST+chosenImage+".ImageData.Dimensions.0")).intValue();
-		fi.height = ((Integer) tagHash.get(IMGLIST+chosenImage+".ImageData.Dimensions.1")).intValue();
+		try{
+			fi.height = ((Integer) tagHash.get(IMGLIST+chosenImage+".ImageData.Dimensions.1")).intValue();
+		} catch (Exception e) {
+			// some line spectrum images seem to omit this info
+			// (I suppose the height doesn't make much sense, but awkward for us)
+			IJ.log("Image height missing. Assuming = 1.");
+			fi.height = 1;
+		}
 		// This will exist for a 3D stack
 		if(tagHash.get(IMGLIST+chosenImage+".ImageData.Dimensions.2")!=null)
 			fi.nImages=((Integer) tagHash.get(IMGLIST+chosenImage+".ImageData.Dimensions.2")).intValue();
