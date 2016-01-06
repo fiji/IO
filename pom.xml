@@ -79,5 +79,4 @@
 			<artifactId>jzlib</artifactId>
 		</dependency>
 	</dependencies>
-
 </project>
