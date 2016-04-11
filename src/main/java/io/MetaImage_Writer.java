@@ -40,6 +40,11 @@ FITNESS FOR ANY PARTICULAR PURPOSE.
 //02: MHD/MHA-bug resoved
 
 import java.io.*;
+
+import net.imagej.units.UnitService;
+
+import org.scijava.Context;
+
 import java.awt.*;
 import ij.*;
 import ij.gui.*;
@@ -286,13 +291,26 @@ public final class MetaImage_Writer implements PlugIn {
         else
             stream.println("BinaryDataByteOrderMSB = True");
 
+        // From the MHA file format specification:
+        //
+        //     ElementSize: Optional Field. Physical size (in MM) of each
+        //     element in the image (0 = xSize, 1 = ySize, 2 = zSize)
+        //
+        // For details, see:
+        // http://www.itk.org/Wiki/MetaIO/Documentation#Field_descriptions_2
+        //
+        // So, we must convert the physical sizes into MM to store them here.
+        final double pixelWidth = normalizeToMM(fi, fi.pixelWidth);
+        final double pixelHeight = normalizeToMM(fi, fi.pixelHeight);
+        final double pixelDepth = normalizeToMM(fi, fi.pixelDepth);
+
         if (ndims == 3) {
             stream.println("DimSize = " + fi.width + " " + fi.height + " " + fi.nImages);
-            stream.println("ElementSize = " + fi.pixelWidth + " " + fi.pixelHeight + " " + fi.pixelDepth);
+            stream.println("ElementSize = " + pixelWidth + " " + pixelHeight + " " + pixelDepth);
         }
         else {
             stream.println("DimSize = " + fi.width + " " + fi.height);
-            stream.println("ElementSize = " + fi.pixelWidth + " " + fi.pixelHeight);
+            stream.println("ElementSize = " + pixelWidth + " " + pixelHeight);
         }
         if (numChannels != "1")
             stream.println("ElementNumberOfChannels = " + numChannels);
@@ -308,5 +326,29 @@ public final class MetaImage_Writer implements PlugIn {
         file.close();
 
         return true;
+    }
+
+    private double normalizeToMM(final FileInfo fi, final double value) {
+        if (fi.unit == null) {
+            IJ.log("MetaImage Writer: No unit specified. Assuming MM.");
+            return value;
+        }
+        final Context context = (Context) IJ.runPlugIn("org.scijava.Context", "");
+        if (context == null) {
+            IJ.log("MetaImage Writer: Cannot convert unit. Not SciJava!?");
+            return value;
+        }
+        final UnitService unitService = context.getService(UnitService.class);
+        if (unitService == null) {
+            IJ.log("MetaImage Writer: Cannot convert unit. No unit service!");
+            return value;
+        }
+        try {
+            return unitService.value(value, fi.unit, "mm");
+        }
+        catch (final IllegalArgumentException exc) {
+            IJ.log("MetaImage Writer: Cannot convert unit: " + exc.getMessage());
+            return value;
+        }
     }
 }
