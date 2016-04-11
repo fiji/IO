@@ -44,6 +44,7 @@ import java.io.*;
 import net.imagej.units.UnitService;
 
 import org.scijava.Context;
+import org.scijava.log.LogService;
 
 import java.awt.*;
 import ij.*;
@@ -348,6 +349,10 @@ public final class MetaImage_Writer implements PlugIn {
         }
         catch (final IllegalArgumentException exc) {
             IJ.log("MetaImage Writer: Cannot convert unit: " + exc.getMessage());
+            final LogService log = context.getService(LogService.class);
+            if (log != null && log.isDebug()) {
+                log.debug(exc);
+            }
             return value;
         }
     }
