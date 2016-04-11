@@ -93,11 +93,11 @@ class ExtendedFileSaver extends FileSaver {
                 for (int i=0; i<n; i++)
                     pixels[i] = (short)(pixels[i]-32768);
             }
-	    OutputStream out;
-	    if(path.endsWith(".mha"))//append
-		out= new BufferedOutputStream(new FileOutputStream(path, true));
-	    else
-		out= new BufferedOutputStream(new FileOutputStream(path));
+            OutputStream out;
+            if(path.endsWith(".mha"))//append
+                out= new BufferedOutputStream(new FileOutputStream(path, true));
+            else
+                out= new BufferedOutputStream(new FileOutputStream(path));
             ImageWriter file = new ImageWriter(mfi);
             file.write(out);
             out.close();
@@ -138,11 +138,11 @@ class ExtendedFileSaver extends FileSaver {
                         pixels[i] = (short)(pixels[i]-32768);
                 }
             }
-	    OutputStream out;
-	    if(path.endsWith(".mha"))//append
-		out= new BufferedOutputStream(new FileOutputStream(path, true));
-	    else
-		out= new BufferedOutputStream(new FileOutputStream(path));
+            OutputStream out;
+            if(path.endsWith(".mha"))//append
+                out= new BufferedOutputStream(new FileOutputStream(path, true));
+            else
+                out= new BufferedOutputStream(new FileOutputStream(path));
             ImageWriter file = new ImageWriter(mfi);
             file.write(out);
             out.close();
@@ -206,23 +206,23 @@ public final class MetaImage_Writer implements PlugIn {
 
     private void save(ImagePlus imp, String dir, String baseName) {
 
-	String headerName;
-	String dataName;
+        String headerName;
+        String dataName;
 
         String lowerBaseName = baseName.toLowerCase();
         if (lowerBaseName.endsWith(".mha")){
-	    headerName = baseName;
-	    dataName = baseName;
-	}
-	else if (lowerBaseName.endsWith(".mhd")){
-	    baseName= baseName.substring(0, baseName.length() - 4);
-	    headerName = baseName + ".mhd";
-	    dataName = baseName + ".raw";
-	}
-	else {
-	    headerName = baseName + ".mha";
-	    dataName = baseName + ".mha";
-	}
+            headerName = baseName;
+            dataName = baseName;
+        }
+        else if (lowerBaseName.endsWith(".mhd")){
+            baseName= baseName.substring(0, baseName.length() - 4);
+            headerName = baseName + ".mhd";
+            dataName = baseName + ".raw";
+        }
+        else {
+            headerName = baseName + ".mha";
+            dataName = baseName + ".mha";
+        }
 
         if (!dir.endsWith(File.separator) && dir.length() > 0)
             dir += File.separator;
@@ -283,7 +283,7 @@ public final class MetaImage_Writer implements PlugIn {
 
         if (fi.intelByteOrder)
             stream.println("BinaryDataByteOrderMSB = False");
-	else
+        else
             stream.println("BinaryDataByteOrderMSB = True");
 
         if (ndims == 3) {
@@ -300,9 +300,9 @@ public final class MetaImage_Writer implements PlugIn {
 
 
         if (dataFile.endsWith(".mha"))
-	    stream.println("ElementDataFile = LOCAL");
-	else
-        stream.println("ElementDataFile = " + dataFile);
+            stream.println("ElementDataFile = LOCAL");
+        else
+            stream.println("ElementDataFile = " + dataFile);
 
         stream.close();
         file.close();
