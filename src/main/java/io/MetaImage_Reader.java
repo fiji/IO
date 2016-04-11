@@ -306,6 +306,14 @@ public class MetaImage_Reader implements PlugIn {
             }
         }
         if (strElementSize != null) {
+            // From the MHA file format specification:
+            //
+            //     ElementSize: Optional Field. Physical size (in MM) of each
+            //     element in the image (0 = xSize, 1 = ySize, 2 = zSize)
+            //
+            // For details, see:
+            // http://www.itk.org/Wiki/MetaIO/Documentation#Field_descriptions_2
+            fi.unit = "mm";
             String[] parts = strElementSize.split("\\s+");
             if (parts.length > 0)
                 fi.pixelWidth  = Double.parseDouble(parts[0]);
