@@ -238,7 +238,7 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 			return tryPlugIn("io.Open_DAT_EMMENU", path);
 		}
 
-		// Albert Cardona: read TrakEM2 .xml files
+		// Albert Cardona: read TrakEM2 .xml files or read BigDataViewer .xml file
 		if (name.endsWith(".xml") || name.endsWith(".xml.gz")) {
 			byte[] b = buf;
 			if (name.endsWith("z")) {
@@ -259,6 +259,8 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 					}
 				}
 			}
+
+			// Albert Cardona: TrakEM2 .xml file
 			if (-1 != new String(b).toLowerCase().indexOf("trakem2")) {
 				try {
 					// portable way, resists absence of TrakEM2_.jar in the classpath
@@ -275,6 +277,7 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 				return null;
 			}
 
+			// Tobias Pietzsch: BigDataViewer .xml file
 			if ( -1 != new String( b ).toLowerCase().indexOf( "<spimdata version=" ) )
 			{
 				return tryPlugIn( "bdv.ij.BigDataViewerPlugIn", path );
