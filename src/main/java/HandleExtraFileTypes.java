@@ -274,6 +274,11 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 				}
 				return null;
 			}
+
+			if ( -1 != new String( b ).toLowerCase().indexOf( "<spimdata version=" ) )
+			{
+				return tryPlugIn( "bdv.ij.BigDataViewerPlugIn", path );
+			}
 		}
 
 		// Stephan Saalfeld: read .df3 files. Documentation at: http://www.povray.org/documentation/view/3.6.1/374/
@@ -415,12 +420,6 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
         {
             return tryPlugIn("ij.plugin.Raw", path);
         }
-
-		//Tobias Pietzsch, HongKee Moon: open .bdv file with BigDataBrowserPlugIn
-		if ( name.endsWith( ".bdv" ) )
-		{
-			return tryPlugIn( "bdv.ij.BigDataBrowserPlugIn", path );
-		}
 
 		// ****************** MODIFY HERE ******************
 		// do what ever you have to do to recognise your own file type
