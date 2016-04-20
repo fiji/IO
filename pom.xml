@@ -17,8 +17,8 @@
 
 	<developers>
 		<developer>
+			<id>jefferis</id>
 			<name>Greg Jefferis</name>
-			<email>jefferis@gmail.com</email>
 			<url>http://imagej.net/User:Jefferis</url>
 			<roles>
 				<role>founder</role>
@@ -30,16 +30,12 @@
 		<developer>
 			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
-			<email>ctrueden@wisc.edu</email>
-			<url>http://loci.wisc.edu/people/curtis-rueden</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<url>http://imagej.net/User:Rueden</url>
 			<roles>
 				<role>debugger</role>
 				<role>reviewer</role>
 				<role>maintainer</role>
 			</roles>
-			<timezone>-6</timezone>
 		</developer>
 	</developers>
 	<contributors>
