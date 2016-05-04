@@ -18,7 +18,7 @@
 	<developers>
 		<developer>
 			<id>jefferis</id>
-			<name>Greg Jefferis</name>
+			<name>Gregory Jefferis</name>
 			<url>http://imagej.net/User:Jefferis</url>
 			<roles>
 				<role>founder</role>
@@ -63,7 +63,7 @@
 			<properties><id>lannybroo</id></properties>
 		</contributor>
 		<contributor>
-			<name>Christopher Bruns</name>
+			<name>Christopher M. Bruns</name>
 			<properties><id>cmbruns</id></properties>
 		</contributor>
 		<contributor>
