@@ -145,7 +145,7 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		if (name.endsWith(".dm3") && buf[0] == 0 && buf[1] == 0 && buf[2] == 0 &&
 			buf[3] == 3)
 		{
-			return tryPlugIn("io.DM3_Reader", path);
+			return tryPlugIn("sc.fiji.io.DM3_Reader", path);
 		}
 
 		// IPLab file handler
@@ -154,7 +154,7 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 			(buf[0] == 105 && buf[1] == 105 && buf[2] == 105 && buf[3] == 105) ||
 			(buf[0] == 109 && buf[1] == 109 && buf[2] == 109 && buf[3] == 109))
 		{
-			return tryPlugIn("io.IPLab_Reader", path);
+			return tryPlugIn("sc.fiji.io.IPLab_Reader", path);
 		}
 
 		// Packard InstantImager format (.img) handler -> check HERE
@@ -248,7 +248,7 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		if (name.endsWith(".mrc") || name.endsWith(".rec") ||
 			name.endsWith(".st") || name.endsWith(".tmg"))
 		{
-			return tryPlugIn("io.Open_MRC_Leginon", path);
+			return tryPlugIn("sc.fiji.io.Open_MRC_Leginon", path);
 		}
 
 		// Deltavision file handler
@@ -260,7 +260,7 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		// Albert Cardona: read .dat files from the EMMENU software
 		// 'new format' only
 		if (name.endsWith(".dat") && 1 == buf[1] && 0 == buf[2]) {
-			return tryPlugIn("io.Open_DAT_EMMENU", path);
+			return tryPlugIn("sc.fiji.io.Open_DAT_EMMENU", path);
 		}
 
 		// Albert Cardona: read TrakEM2 .xml files
@@ -310,18 +310,18 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		// Stephan Saalfeld: read .df3 files. Documentation at:
 		// http://www.povray.org/documentation/view/3.6.1/374/
 		if (name.endsWith(".df3")) {
-			return tryPlugIn("io.Open_DF3", path);
+			return tryPlugIn("sc.fiji.io.Open_DF3", path);
 		}
 
 		if (name.endsWith(".dat") && buf[0] == -45 && buf[1] == -19 &&
 			buf[2] == -11 && buf[3] == -14)
 		{
-			return tryPlugIn("io.FIBSEM_Reader", path);
+			return tryPlugIn("sc.fiji.io.FIBSEM_Reader", path);
 		}
 
 		// Albert Cardona: open one or more pages of a PDF file as images
 		if (name.endsWith(".pdf")) {
-			return tryPlugIn("io.PDF_Viewer", path);
+			return tryPlugIn("sc.fiji.io.PDF_Viewer", path);
 		}
 
 		// Greg Jefferis: open nrrd images
@@ -330,7 +330,7 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 			final String nrrdMagic = new String(buf, 0, 7, "US-ASCII");
 			if (nrrdMagic.equals("NRRD000")) {
 				// Ok we've identified the file type - now load it
-				return tryPlugIn("io.Nrrd_Reader", path);
+				return tryPlugIn("sc.fiji.io.Nrrd_Reader", path);
 			}
 		}
 		catch (final Exception e) {}
@@ -353,20 +353,20 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 
 			if (studyDir.isDirectory())
 			// Ok we've identified the file type - now load it
-			return tryPlugIn("io.TorstenRaw_GZ_Reader", path);
+			return tryPlugIn("sc.fiji.io.TorstenRaw_GZ_Reader", path);
 		}
 
 		// Johannes Schindelin: open one or more images in a .ico file
-		if (name.endsWith(".ico")) return tryPlugIn("io.ICO_Reader", path);
+		if (name.endsWith(".ico")) return tryPlugIn("sc.fiji.io.ICO_Reader", path);
 
 		// Johannes Schindelin: open one or more images in a .icns file
-		if (name.endsWith(".icns")) return tryPlugIn("io.Icns_Reader", path);
+		if (name.endsWith(".icns")) return tryPlugIn("sc.fiji.io.Icns_Reader", path);
 
 		// Johannes Schindelin: render an .svg image into an ImagePlus
-		if (name.endsWith(".svg")) return tryPlugIn("io.SVG_Reader", path);
+		if (name.endsWith(".svg")) return tryPlugIn("sc.fiji.io.SVG_Reader", path);
 
 		// Johannes Schindelin: open an LSS16 (SYSLINUX) image
-		if (name.endsWith(".lss")) return tryPlugIn("io.LSS16_Reader", path);
+		if (name.endsWith(".lss")) return tryPlugIn("sc.fiji.io.LSS16_Reader", path);
 
 		// Johannes Schindelin: handle scripts
 		if (name.endsWith(".py")) {
@@ -437,18 +437,18 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 		// Roman Grothausmann: read metaimages (ITK) with MetaImage_Reader
 		if (name.endsWith(".mhd")) {
 			// IJ.log("Found MHD, trying MetaImage_Reader...");
-			return tryPlugIn("io.MetaImage_Reader", path);
+			return tryPlugIn("sc.fiji.io.MetaImage_Reader", path);
 		}
 		if (name.endsWith(".mha")) {
 			// IJ.log("Found MHA, trying MetaImage_Reader...");
-			return tryPlugIn("io.MetaImage_Reader", path);
+			return tryPlugIn("sc.fiji.io.MetaImage_Reader", path);
 		}
 
 		// Jerome Parent : open .bin file with Koala_Bin_Reader plugin
 		// ----------------------------------------------
 		// check if the file ends in .bin
 		if (name.endsWith(".bin")) {
-			return tryPlugIn("io.Koala_Bin_Reader", path);
+			return tryPlugIn("sc.fiji.io.Koala_Bin_Reader", path);
 		}
 
 		// Samuel Inverso: open raw files with raw file plugin
