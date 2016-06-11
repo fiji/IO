@@ -130,6 +130,7 @@
 			<url>http://imagej.net/User:JeanYvesTinevez</url>
 			<properties><id>tinevez</id></properties>
 		</contributor>
+		<contributor><name>Pepijn Van Eeckhoudt</name></contributor>
 	</contributors>
 
 	<scm>
