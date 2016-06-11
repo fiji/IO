@@ -22,7 +22,7 @@ import java.io.IOException;
  * <li>Requires ImageJ 1.16 or later <li>
  * </ul>
  *
- * @author Guy Williams <gbw1000@wbic.cam.ac.uk> 23/9/99
+ * @author Guy Williams gbw1000@wbic.cam.ac.uk 23/9/99
  */
 public class Analyze_Reader extends ImagePlus implements PlugIn {
   
