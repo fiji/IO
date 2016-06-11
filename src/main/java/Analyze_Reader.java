@@ -11,16 +11,19 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-/** This plugin loads Analyze format files.  
-    It parses the header file found in '<filename>.hdr' and uses this to 
-    appropriately load the raw image data found in '<filename>.img'. 
-      - Loads either big or little endian format.   
-      - Requires ImageJ 1.16 or later 
-
-    Guy Williams, gbw1000@wbic.cam.ac.uk        23/9/99
-*/
-
-
+/**
+ * This plugin loads Analyze format files.
+ * <p>
+ * It parses the header file found in {@code <filename>.hdr} and uses this to
+ * appropriately load the raw image data found in {@code <filename>.img}.
+ * </p>
+ * <ul>
+ * <li>Loads either big or little endian format.</li>
+ * <li>Requires ImageJ 1.16 or later <li>
+ * </ul>
+ *
+ * @author Guy Williams <gbw1000@wbic.cam.ac.uk> 23/9/99
+ */
 public class Analyze_Reader extends ImagePlus implements PlugIn {
   
   public boolean littleEndian = false;

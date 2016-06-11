@@ -14,16 +14,20 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-//	This plugin saves Analyze format files.  
-//	It appends the '.img' and '.hdr' suffixes to the image and header files
-//	respectively. 
-//	- Saves in big endian format.   
-//	- Will not work on RGB images (unlike associated ReadAnalyze plugin).
-//	- Requires ImageJ 1.16 or later 
-//
-//	Guy Williams, gbw1000@wbic.cam.ac.uk 	23/9/99
- 
-
+/**
+ * This plugin saves Analyze format files.
+ * <p>
+ * It appends the {@code .img} and {@code .hdr} suffixes to the image and header
+ * files respectively.
+ * </p>
+ * <ul>
+ * <li>Saves in big endian format.</li>
+ * <li>Will not work on RGB images (unlike associated ReadAnalyze plugin).</li>
+ * <li>Requires ImageJ 1.16 or later</li>
+ * </ul>
+ *
+ * @author Guy Williams <gbw1000@wbic.cam.ac.uk> 23/9/99
+*/
 public final class Analyze_Writer implements PlugIn {
 
 	public void run(String arg) {
