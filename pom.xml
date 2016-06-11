@@ -105,7 +105,6 @@
 			<url>http://imagej.net/User:Mark</url>
 			<properties><id>mhl</id></properties>
 		</contributor>
-		<contributor><name>Ian McDonagh</name></contributor>
 		<contributor>
 			<name>Jerome Parent</name>
 			<url>http://imagej.net/User:Jejmule</url>
@@ -191,6 +190,11 @@
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-gvt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jclarion</groupId>
+			<artifactId>image4j</artifactId>
+			<version>0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jpedal</groupId>
