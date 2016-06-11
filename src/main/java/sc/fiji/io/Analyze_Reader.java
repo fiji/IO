@@ -1,3 +1,5 @@
+package sc.fiji.io;
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
