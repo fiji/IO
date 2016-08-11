@@ -159,6 +159,7 @@ import ij.io.FileInfo;
 import ij.io.FileOpener;
 import ij.io.OpenDialog;
 import ij.plugin.PlugIn;
+import ij.process.ImageProcessor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -229,6 +230,12 @@ public class Open_MRC_Leginon extends ImagePlus implements PlugIn {
 		ImageStack stack = imp.getStack();
 		setStack(imp.getTitle(),stack);
 		setCalibration(imp.getCalibration());
+
+		for (int i=1; i<=stack.getSize(); ++i) {
+				ImageProcessor tempImageProcessor = stack.getProcessor(i);
+				tempImageProcessor.flipVertical();
+		}
+
 		Object obinfo = imp.getProperty("Info");
 		if (null != obinfo) setProperty("Info", obinfo);
 		setFileInfo(imp.getOriginalFileInfo());
