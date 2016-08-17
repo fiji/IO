@@ -231,6 +231,9 @@ public class Open_MRC_Leginon extends ImagePlus implements PlugIn {
 		setStack(imp.getTitle(),stack);
 		setCalibration(imp.getCalibration());
 
+		// NB: Per definition, the MRC coordinate system is located at the lower
+		// left corner in contrast to ImageJ's default. To fix that, flip the images
+		// vertically after reading.
 		for (int i=1; i<=stack.getSize(); ++i) {
 				ImageProcessor tempImageProcessor = stack.getProcessor(i);
 				tempImageProcessor.flipVertical();
