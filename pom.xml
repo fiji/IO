@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>IO_</artifactId>
-	<version>3.0.0-SNAPSHOT</version>
+	<version>3.0.0</version>
 
 	<name>plugins/IO_.jar</name>
 	<description />
@@ -137,7 +137,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/fiji/IO</connection>
 		<developerConnection>scm:git:git@github.com:fiji/IO</developerConnection>
-		<tag>HEAD</tag>
+		<tag>IO_-3.0.0</tag>
 		<url>https://github.com/fiji/IO</url>
 	</scm>
 	<issueManagement>
