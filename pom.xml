@@ -42,20 +42,20 @@
 		<contributor>
 			<name>Albert Cardona</name>
 			<url>http://imagej.net/User:Albertcardona</url>
-			<properties><id>acardona</id></properties>
 			<roles><role>founder</role></roles>
+			<properties><id>acardona</id></properties>
 		</contributor>
 		<contributor>
 			<name>Johannes Schindelin</name>
 			<url>http://imagej.net/User:Schindelin</url>
-			<properties><id>dscho</id></properties>
 			<roles><role>founder</role></roles>
+			<properties><id>dscho</id></properties>
 		</contributor>
 		<contributor>
 			<name>Wayne Rasband</name>
 			<url>http://imagej.net/Wayne_Rasband</url>
-			<properties><id>rasband</id></properties>
 			<roles><role>founder</role></roles>
+			<properties><id>rasband</id></properties>
 		</contributor>
 		<contributor>
 			<name>Alan Brooks</name>
