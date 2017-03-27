@@ -3,17 +3,31 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>sc.fiji</groupId>
-		<artifactId>pom-fiji</artifactId>
-		<version>26.1.1</version>
+		<groupId>org.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>14.0.0</version>
 		<relativePath />
 	</parent>
 
+	<groupId>sc.fiji</groupId>
 	<artifactId>IO_</artifactId>
 	<version>3.0.2-SNAPSHOT</version>
 
-	<name>plugins/IO_.jar</name>
-	<description />
+	<name>IO</name>
+	<description>IO plugin for Fiji.</description>
+	<url>https://imagej.net/IO</url>
+	<inceptionYear>2008</inceptionYear>
+	<organization>
+		<name>Fiji</name>
+		<url>https://fiji.sc/</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>GNU General Public License v3+</name>
+			<url>https://www.gnu.org/licenses/gpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<developers>
 		<developer>
@@ -134,6 +148,13 @@
 		<contributor><name>Guy Williams</name></contributor>
 	</contributors>
 
+	<mailingLists>
+		<mailingList>
+			<name>ImageJ Forum</name>
+			<archive>http://forum.imagej.net/</archive>
+		</mailingList>
+	</mailingLists>
+
 	<scm>
 		<connection>scm:git:git://github.com/fiji/IO</connection>
 		<developerConnection>scm:git:git@github.com:fiji/IO</developerConnection>
@@ -149,8 +170,13 @@
 		<url>http://jenkins.imagej.net/job/IO/</url>
 	</ciManagement>
 
+	<properties>
+		<package-name>sc.fiji.io</package-name>
+		<license.licenseName>gpl_v3</license.licenseName>
+		<license.copyrightOwners>Fiji developers.</license.copyrightOwners>
+	</properties>
+
 	<repositories>
-		<!-- NB: for project parent -->
 		<repository>
 			<id>imagej.public</id>
 			<url>http://maven.imagej.net/content/groups/public</url>
