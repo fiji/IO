@@ -166,8 +166,8 @@
 		<url>https://github.com/fiji/IO/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/job/IO/</url>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/fiji/IO</url>
 	</ciManagement>
 
 	<properties>
