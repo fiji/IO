@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>14.0.0</version>
+		<version>16.1.0</version>
 		<relativePath />
 	</parent>
 
@@ -175,8 +175,7 @@
 		<license.licenseName>gpl_v3</license.licenseName>
 		<license.copyrightOwners>Fiji developers.</license.copyrightOwners>
 
-		<!-- TEMP: until pom-scijava 15.0.0 is released. -->
-		<batik.version>1.9</batik.version>
+		<image4j.version>0.7</image4j.version>
 	</properties>
 
 	<repositories>
@@ -222,7 +221,6 @@
 			<!-- NB: Required, but unfortunately undeclared, by batik-bridge. -->
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-constants</artifactId>
-			<version>${batik-bridge.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
@@ -231,7 +229,7 @@
 		<dependency>
 			<groupId>org.jclarion</groupId>
 			<artifactId>image4j</artifactId>
-			<version>0.7</version>
+			<version>${image4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jpedal</groupId>
