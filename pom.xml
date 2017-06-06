@@ -176,6 +176,8 @@
 		<license.copyrightOwners>Fiji developers.</license.copyrightOwners>
 
 		<image4j.version>0.7</image4j.version>
+		<!-- TEMP: until pom-scijava 16.2.0 is released. -->
+		<xmlgraphics-commons.version>2.2</xmlgraphics-commons.version>
 	</properties>
 
 	<repositories>
@@ -220,7 +222,25 @@
 		<dependency>
 			<!-- NB: Required, but unfortunately undeclared, by batik-bridge. -->
 			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-codec</artifactId>
+			<!-- TEMP: until pom-scijava 16.2.0 is released. -->
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<!-- NB: Required, but unfortunately undeclared, by batik-bridge. -->
+			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-constants</artifactId>
+		</dependency>
+		<dependency>
+			<!-- NB: Required, but unfortunately undeclared, by batik-bridge. -->
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>xmlgraphics-commons</artifactId>
+			<version>${xmlgraphics-commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
