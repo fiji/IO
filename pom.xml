@@ -178,6 +178,7 @@
 		<image4j.version>0.7</image4j.version>
 		<!-- TEMP: until pom-scijava 16.2.0 is released. -->
 		<xmlgraphics-commons.version>2.2</xmlgraphics-commons.version>
+		<batik.version>1.9.1</batik.version>
 	</properties>
 
 	<repositories>
@@ -218,29 +219,17 @@
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-bridge</artifactId>
-		</dependency>
-		<dependency>
-			<!-- NB: Required, but unfortunately undeclared, by batik-bridge. -->
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>batik-codec</artifactId>
-			<!-- TEMP: until pom-scijava 16.2.0 is released. -->
 			<exclusions>
 				<exclusion>
-					<groupId>xml-apis</groupId>
-					<artifactId>xml-apis</artifactId>
+					<!--
+					NB: jython is an unshaded uber-JAR;
+					depending on it brings in duplicate classes.
+					See: https://imagej.net/Uber-JAR
+					-->
+					<groupId>org.python</groupId>
+					<artifactId>jython</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<!-- NB: Required, but unfortunately undeclared, by batik-bridge. -->
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>batik-constants</artifactId>
-		</dependency>
-		<dependency>
-			<!-- NB: Required, but unfortunately undeclared, by batik-bridge. -->
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>xmlgraphics-commons</artifactId>
-			<version>${xmlgraphics-commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
