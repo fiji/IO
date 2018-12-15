@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>17.1.1</version>
+		<version>24.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -175,13 +175,10 @@
 		<license.licenseName>gpl_v3</license.licenseName>
 		<license.copyrightOwners>Fiji developers.</license.copyrightOwners>
 
-		<image4j.version>0.7</image4j.version>
-		<!-- TEMP: until pom-scijava 16.2.0 is released. -->
-		<xmlgraphics-commons.version>2.2</xmlgraphics-commons.version>
-		<batik.version>1.9.1</batik.version>
-
 		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
 		<releaseProfiles>deploy-to-imagej</releaseProfiles>
+
+		<image4j.version>0.7</image4j.version>
 	</properties>
 
 	<repositories>
