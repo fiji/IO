@@ -13,6 +13,10 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
 
+import org.scijava.Context;
+import org.scijava.io.IOService;
+import org.scijava.ui.UIService;
+
 // Plugin to handle file types which are not implemented
 // directly in ImageJ through io.Opener
 // NB: since there is no _ in the name it will not appear in Plugins menu
@@ -511,6 +515,27 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 				}
 				catch (final Exception exc) {}
 			}
+		}
+
+		// Finally, try opening the file with the SciJava IOService.
+		try {
+			final Object ctx = IJ.runPlugIn("org.scijava.Context", "");
+			if (ctx instanceof Context) {
+				final Context context = (Context) ctx;
+				final IOService ioService = context.getService(IOService.class);
+				final UIService uiService = context.getService(UIService.class);
+				if (ioService != null && uiService != null) {
+					final Object data = ioService.open(path);
+					if (data != null) {
+						width = IMAGE_OPENED;
+						uiService.show(data);
+						return null;
+					}
+				}
+			}
+		}
+		catch (final IOException exc) {
+			// NB: Fail silently. :'-(
 		}
 
 		return null;
