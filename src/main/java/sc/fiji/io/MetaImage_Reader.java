@@ -132,7 +132,7 @@ public class MetaImage_Reader implements PlugIn {
     }
 
 
-    private ImagePlus load(String  dir,
+    public ImagePlus load(String  dir,
                            String  baseName,
                            String  headerName,
                            boolean local)
