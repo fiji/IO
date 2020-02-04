@@ -11,7 +11,7 @@
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>IO_</artifactId>
-	<version>4.1.0-SNAPSHOT</version>
+	<version>4.1.0</version>
 
 	<name>IO</name>
 	<description>IO plugin for Fiji.</description>
@@ -158,7 +158,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/fiji/IO</connection>
 		<developerConnection>scm:git:git@github.com:fiji/IO</developerConnection>
-		<tag>HEAD</tag>
+		<tag>IO_-4.1.0</tag>
 		<url>https://github.com/fiji/IO</url>
 	</scm>
 	<issueManagement>
