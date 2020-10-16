@@ -19,7 +19,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * Opens the proprietary FIB-SEM format used at Janelia Farm
+ * Opens the proprietary FIB-SEM format used at Janelia
+ *
+ * The reference MATLAB implementation from Janelia is available at:
+ * https://github.com/david-hoffman/FIB-SEM-Aligner/blob/master/matlab
  *
  * @author Stephan Preibisch (stephan.preibisch@gmx.de)
  */
