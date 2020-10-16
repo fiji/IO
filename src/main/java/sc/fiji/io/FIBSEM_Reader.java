@@ -148,14 +148,20 @@ public class FIBSEM_Reader implements PlugIn
 
 		ImagePlus imp;
 		double[] minmax = new double[] { Double.MAX_VALUE, Double.MIN_VALUE };
-		
+
+		final ImageProcessor[] channels = readChannels( header, file, minmax, openAsFloat );
 		if ( header.numChannels == 1 )
 		{
-			imp = new ImagePlus( "", readChannel( header, file, minmax, openAsFloat ) );
+			imp = new ImagePlus( "", channels[ 0 ] );
 		}
 		else
 		{
-			imp = new ImagePlus( "", readChannels( header, file, minmax, openAsFloat ) );
+
+			final ImageStack stack = new ImageStack( (int)header.xRes, (int)header.yRes );
+
+			for ( int c = 0; c < header.numChannels; ++c )
+				stack.addSlice( "channel " + c, channels[ c ] );
+			imp = new ImagePlus( "", stack);
 			imp.setDimensions( 1, header.numChannels, 1 );
 			imp =  new CompositeImage( imp, CompositeImage.GRAYSCALE );
 		}
@@ -164,83 +170,7 @@ public class FIBSEM_Reader implements PlugIn
 		return imp;
 	}
 
-	final ImageProcessor readChannel( final FIBSEMData header, final FileInputStream file, double[] minmax, boolean openAsFloat ) throws IOException
-	{
-		// it is always unsigned short
-		final byte[] slice = new byte[ (int)header.xRes * (int)header.yRes * 2 ];
-		file.read( slice );
-
-		// for the display range
-		double min = Double.MAX_VALUE;
-		double max = Double.MIN_VALUE;
-
-		final ImageProcessor ip;
-
-		if ( openAsFloat )
-		{
-			final float[] floatSlice = new float[ (int)header.xRes * (int)header.yRes ];
-
-			for ( int i = 0; i < floatSlice.length; ++i )
-			{
-				int j = 2 * i;
-				int v = ( slice[ j ] ) << 8;
-				v += ( slice[ j + 1 ] );
-
-				final float v2 = (header.offset[ 0 ] + v * header.gain[ 0 ]);
-
-				if ( v2 < min ) min = v2;
-				if ( v2 > max ) max = v2;
-				floatSlice[ i ] = v2;
-			}
-			ip = new FloatProcessor( (int)header.xRes, (int)header.yRes, floatSlice, null );
-		}
-		else
-		{
-			final short[] shortSlice = new short[ (int)header.xRes * (int)header.yRes ];
-
-			final float minVolts = -10;//(float)header.detMin;
-			final float rangeVolts = 20;//(float)header.detMax - (float)header.detMin;
-			
-			int cropped = 0;
-			
-			for ( int i = 0; i < shortSlice.length; ++i )
-			{
-				int j = 2 * i;
-				int v = ( slice[ j ] ) << 8;
-				v += ( slice[ j + 1 ] );
-
-				v = Math.round( ((header.offset[ 0 ] + v * header.gain[ 0 ])-minVolts)/rangeVolts*65535.0f );
-
-				if ( v < 0 )
-				{
-					v = 0;
-					++cropped;
-				}
-				
-				if ( v > 65535 )
-				{
-					v = 65535;
-					++cropped;
-				}
-				
-				if ( v < min ) min = v;
-				if ( v > max ) max = v;
-				shortSlice[ i ] = (short)v;
-			}
-			
-			if ( cropped > 0 )
-				IJ.log( "Warning : " + cropped + " values have been truncated as they were out of range of 16 bit. To verify this, please open the image as float (see http://fiji.sc/wiki/index.php/FIBSEM_importer#Open_image_as_float)" );
-
-			ip = new ShortProcessor( (int)header.xRes, (int)header.yRes, shortSlice, null );
-		}
-
-		minmax[ 0 ] = min;
-		minmax[ 1 ] = max;
-
-		return ip;
-	}
-
-	final ImageStack readChannels( final FIBSEMData header, final FileInputStream file, double[] minmax, boolean openAsFloat ) throws IOException
+	final ImageProcessor[] readChannels( final FIBSEMData header, final FileInputStream file, double[] minmax, boolean openAsFloat ) throws IOException
 	{
 		final int numChannels = header.numChannels;
 
@@ -252,7 +182,7 @@ public class FIBSEM_Reader implements PlugIn
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
 
-		final ImageStack stack;
+		final ImageProcessor[] channels = new ImageProcessor[ numChannels ];
 
 		if ( openAsFloat )
 		{
@@ -275,10 +205,8 @@ public class FIBSEM_Reader implements PlugIn
 				}
 			}
 
-			stack = new ImageStack( (int)header.xRes, (int)header.yRes );
-
 			for ( int c = 0; c < numChannels; ++c )
-				stack.addSlice( "channel " + c, new FloatProcessor( (int)header.xRes, (int)header.yRes, floatSlice[ c ], null ) );
+				channels[ c ] = new FloatProcessor( (int)header.xRes, (int)header.yRes, floatSlice[ c ], null );
 		}
 		else
 		{			
@@ -323,17 +251,16 @@ public class FIBSEM_Reader implements PlugIn
 				if ( cropped[ i ] > 0 )
 					IJ.log( "Warning (channel " + (i+1) + "/" + numChannels + "): " + cropped[ i ] + " values have been truncated as they were out of range of 16 bit. To verify this, please open the image as float (see http://fiji.sc/wiki/index.php/FIBSEM_importer#Open_image_as_float)" );
 
-			stack = new ImageStack( (int)header.xRes, (int)header.yRes );
 
 			for ( int c = 0; c < numChannels; ++c )
-				stack.addSlice( "channel " + c, new ShortProcessor( (int)header.xRes, (int)header.yRes, shortSlice[ c ], null ) );
+				channels[ c ] = new ShortProcessor( (int)header.xRes, (int)header.yRes, shortSlice[ c ], null );
 
 		}
 
 		minmax[ 0 ] = min;
 		minmax[ 1 ] = max;
 
-		return stack;
+		return channels;
 	}
 
 	/**
