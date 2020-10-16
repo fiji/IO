@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
 
 /**
  * Opens the proprietary FIB-SEM format used at Janelia
@@ -177,6 +179,8 @@ public class FIBSEM_Reader implements PlugIn
 		// it is always unsigned short
 		final byte[] slice = new byte[ (int)header.xRes * (int)header.yRes * numChannels * 2 ];
 		file.read( slice );
+		final ByteBuffer buffer = ByteBuffer.wrap( slice );
+		final ShortBuffer shortBuffer = buffer.asShortBuffer();
 
 		// for the display range
 		double min = Double.MAX_VALUE;
@@ -193,9 +197,8 @@ public class FIBSEM_Reader implements PlugIn
 			{
 				for ( int c = 0; c < numChannels; ++c )
 				{
-					int j = 2 * i * numChannels + 2 * c;
-					int v = ( slice[ j ] ) << 8;
-					v += ( slice[ j + 1 ] );
+					int j = i * numChannels + c;
+					int v = shortBuffer.get( j );
 
 					final float v2 = header.offset[ 0 ] + v * header.gain[ 0 ];
 
@@ -222,9 +225,8 @@ public class FIBSEM_Reader implements PlugIn
 				
 				for ( int c = 0; c < numChannels; ++c )
 				{
-					int j = 2 * i * numChannels + 2 * c;
-					int v = ( slice[ j ] ) << 8;
-					v += ( slice[ j + 1 ] );
+					int j = i * numChannels + c;
+					int v = shortBuffer.get( j );
 
 					v = Math.round( ((header.offset[ 0 ] + v * header.gain[ 0 ])-minVolts)/rangeVolts*65535.0f );
 					
