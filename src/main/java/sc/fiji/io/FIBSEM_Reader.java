@@ -43,6 +43,13 @@ public class FIBSEM_Reader implements PlugIn
 	public static boolean openAsFloat = false;
 
 	/**
+	 * Match the "raw" output format of the reference implementation, which does not scale the data.
+	 *
+	 * Only used if `openAsFloat` is false.
+	 */
+	public static boolean openAsRaw = false;
+
+	/**
 	 * Stores the current header if somebody wants access to it
 	 */
 	FIBSEMData header;
@@ -229,30 +236,34 @@ public class FIBSEM_Reader implements PlugIn
 				for ( int c = 0; c < numChannels; ++c )
 				{
 					int j = i * numChannels + c;
-					final short v = shortBuffer.get( j );
+					short v = shortBuffer.get( j );
 
-					float fv = scale( header, v, c );
-					// Matching fibsem2tiff.m, only versions 1-6 receive this scaling, so
-					// for versions 7-8 the scaled version is the same as `openAsFloat`.
-					if ( header.fileVersion <= 6 )
-						fv = ( fv - minVolts ) / rangeVolts*65535.0f;
-					int iv = Math.round( fv );
-					
-					if ( iv < 0 )
-					{
-						iv = 0;
-						++cropped[ c ];
+					if ( openAsRaw ) {
+						v += 32768;
+					} else {
+						float fv = scale(header, v, c);
+						// Matching fibsem2tiff.m, only versions 1-6 receive this scaling, so
+						// for versions 7-8 the scaled version is the same as `openAsFloat`.
+						if (header.fileVersion <= 6)
+							fv = (fv - minVolts) / rangeVolts * 65535.0f;
+						int iv = Math.round(fv);
+
+						if (iv < 0) {
+							iv = 0;
+							++cropped[c];
+						}
+
+						if (iv > 65535) {
+							iv = 65535;
+							++cropped[c];
+						}
+
+						v = (short) iv;
 					}
-					
-					if ( iv > 65535 )
-					{
-						iv = 65535;
-						++cropped[ c ];
-					}
-					
-					if ( iv < min ) min = iv;
-					if ( iv > max ) max = iv;
-					shortSlice[ c ][ i ] = (short)(iv);
+
+					if (v < min) min = v;
+					if (v > max) max = v;
+					shortSlice[ c ][ i ] = v;
 				}
 				
 			}
@@ -1167,6 +1178,7 @@ public class FIBSEM_Reader implements PlugIn
 		new ImageJ();
 
 		FIBSEM_Reader.openAsFloat = false;
+		FIBSEM_Reader.openAsRaw = false;
 
 		FIBSEM_Reader r = new FIBSEM_Reader();
 		//r.run( "/Users/preibischs/Desktop/Zeiss_12-02-07_094618.dat" );
