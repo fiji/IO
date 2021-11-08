@@ -156,7 +156,7 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/fiji/IO</connection>
+		<connection>scm:git:https://github.com/fiji/IO</connection>
 		<developerConnection>scm:git:git@github.com:fiji/IO</developerConnection>
 		<tag>HEAD</tag>
 		<url>https://github.com/fiji/IO</url>
