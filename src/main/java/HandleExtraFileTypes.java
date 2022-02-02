@@ -37,6 +37,8 @@ import java.util.zip.GZIPInputStream;
 import org.scijava.Context;
 import org.scijava.io.IOService;
 import org.scijava.ui.UIService;
+import org.scijava.ui.dnd.DragAndDropService;
+import org.scijava.display.DisplayService;
 
 // Plugin to handle file types which are not implemented
 // directly in ImageJ through io.Opener
@@ -543,6 +545,13 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 			final Object ctx = IJ.runPlugIn("org.scijava.Context", "");
 			if (ctx instanceof Context) {
 				final Context context = (Context) ctx;
+				final DragAndDropService dndService = context.getService(DragAndDropService.class);
+				final DisplayService dsService = context.getService(DisplayService.class);
+				if ( dndService != null && dsService != null
+						&& dndService.drop(path, dsService.getActiveDisplay()) ) {
+					width = IMAGE_OPENED;
+					return null;
+				}
 				final IOService ioService = context.getService(IOService.class);
 				final UIService uiService = context.getService(UIService.class);
 				if (ioService != null && uiService != null) {
