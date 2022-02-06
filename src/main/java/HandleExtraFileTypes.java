@@ -487,6 +487,12 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 			return tryPlugIn("org.janelia.it.fiji.plugins.h5j.H5j_Reader", path);
 		}
 
+		// Vladimir Ulman: BigDataViewer's xml -> flag to pass processing beyond Bioformats
+		if (name.endsWith(".xml") && new String(buf).contains("<SpimData version")) {
+			width = BYPASS_BIOFORMATS_TO_IOSERVICE;
+			return null;
+		}
+
 		// ****************** MODIFY HERE ******************
 		// do what ever you have to do to recognise your own file type
 		// and then call appropriate plugin using the above as models
