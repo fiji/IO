@@ -549,7 +549,8 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 					final Object data = ioService.open(path);
 					if (data != null) {
 						width = IMAGE_OPENED;
-						uiService.show(data);
+						if (data != IOService.GOVERNING_APP_STARTED)
+							uiService.show(data);
 						return null;
 					}
 				}
