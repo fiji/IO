@@ -61,6 +61,7 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 
 	static final int IMAGE_OPENED = -1;
 	static final int PLUGIN_NOT_FOUND = -2;
+	static final int BYPASS_BIOFORMATS_TO_IOSERVICE = -3;
 	static final boolean LOCI_PRESENT = checkForLoci();
 
 	private static boolean checkForLoci() {
@@ -517,7 +518,7 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 
 		// try opening the file with Bio-Formats plugin - always check this last!
 		// Do not call Bio-Formats if File>Import>Image Sequence is being used.
-		if (o == null &&
+		if (o == null && width != BYPASS_BIOFORMATS_TO_IOSERVICE &&
 			(IJ.getVersion().compareTo("1.38j") < 0 || !IJ.redirectingErrorMessages()) &&
 			(new File(path).exists()))
 		{
