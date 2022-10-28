@@ -521,20 +521,22 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 			(IJ.getVersion().compareTo("1.38j") < 0 || !IJ.redirectingErrorMessages()) &&
 			(new File(path).exists()))
 		{
-			final Object loci = IJ.runPlugIn("loci.plugins.LociImporter", path);
-			if (loci != null) {
-				// plugin exists and was launched
-				try {
-					// check whether plugin was successful
-					final Class<?> c = loci.getClass();
-					final boolean success = c.getField("success").getBoolean(loci);
-					final boolean canceled = c.getField("canceled").getBoolean(loci);
-					if (success || canceled) {
-						width = IMAGE_OPENED;
-						return null;
+			try {
+				final Object loci = IJ.runPlugIn("loci.plugins.LociImporter", path);
+				if (loci != null) {
+					// plugin exists and was launched
+						// check whether plugin was successful
+						final Class<?> c = loci.getClass();
+						final boolean success = c.getField("success").getBoolean(loci);
+						final boolean canceled = c.getField("canceled").getBoolean(loci);
+						if (success || canceled) {
+							width = IMAGE_OPENED;
+							return null;
+						}
 					}
 				}
-				catch (final Exception exc) {}
+			catch (final Exception exc) {
+				if (IJ.debugMode) IJ.handleException(exc);
 			}
 		}
 
