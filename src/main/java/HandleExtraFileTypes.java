@@ -536,6 +536,8 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 					}
 				}
 			catch (final Exception exc) {
+				IJ.log("Error opening the input in LociImporter who says:\n-----\n"
+						+ exc.getMessage() + "\n-----");
 				if (IJ.debugMode) IJ.handleException(exc);
 			}
 		}
