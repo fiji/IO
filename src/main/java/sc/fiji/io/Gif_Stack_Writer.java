@@ -1034,6 +1034,7 @@ public void run(String arg) {
 					fr.addFrame(tmp);
 			} catch(Exception e)  {
 				IJ.showMessage("Save as "+type, ""+e);
+				break;
 			}
 
 			System.gc();
