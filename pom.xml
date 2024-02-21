@@ -15,7 +15,7 @@
 
 	<name>IO</name>
 	<description>IO plugin for Fiji.</description>
-	<url>https://imagej.net/IO</url>
+	<url>https://imagej.net/formats</url>
 	<inceptionYear>2008</inceptionYear>
 	<organization>
 		<name>Fiji</name>
@@ -33,7 +33,7 @@
 		<developer>
 			<id>jefferis</id>
 			<name>Gregory Jefferis</name>
-			<url>https://imagej.net/User:Jefferis</url>
+			<url>https://imagej.net/people/jefferis</url>
 			<roles>
 				<role>founder</role>
 				<role>lead</role>
@@ -44,7 +44,7 @@
 		<developer>
 			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
-			<url>https://imagej.net/User:Rueden</url>
+			<url>https://imagej.net/people/ctrueden</url>
 			<roles>
 				<role>debugger</role>
 				<role>reviewer</role>
@@ -55,25 +55,25 @@
 	<contributors>
 		<contributor>
 			<name>Albert Cardona</name>
-			<url>https://imagej.net/User:Albertcardona</url>
+			<url>https://imagej.net/people/acardona</url>
 			<roles><role>founder</role></roles>
 			<properties><id>acardona</id></properties>
 		</contributor>
 		<contributor>
 			<name>Johannes Schindelin</name>
-			<url>https://imagej.net/User:Schindelin</url>
+			<url>https://imagej.net/people/dscho</url>
 			<roles><role>founder</role></roles>
 			<properties><id>dscho</id></properties>
 		</contributor>
 		<contributor>
 			<name>Wayne Rasband</name>
-			<url>https://imagej.net/Wayne_Rasband</url>
+			<url>https://imagej.net/people/rasband</url>
 			<roles><role>founder</role></roles>
 			<properties><id>rasband</id></properties>
 		</contributor>
 		<contributor>
 			<name>Alan Brooks</name>
-			<url>https://imagej.net/User:Alanb</url>
+			<url>https://imagej.net/people/lannybroo</url>
 			<properties><id>lannybroo</id></properties>
 		</contributor>
 		<contributor>
@@ -82,12 +82,12 @@
 		</contributor>
 		<contributor>
 			<name>Wilhelm Burger</name>
-			<url>https://imagej.net/User:ImagingBook</url>
+			<url>https://imagej.net/people/imagingbook</url>
 			<properties><id>imagingbook</id></properties>
 		</contributor>
 		<contributor>
 			<name>Michael Doube</name>
-			<url>https://imagej.net/User:Michaeldoube</url>
+			<url>https://imagej.net/people/mdoube</url>
 			<properties><id>mdoube</id></properties>
 		</contributor>
 		<contributor>
@@ -100,33 +100,33 @@
 		</contributor>
 		<contributor>
 			<name>Mark Hiner</name>
-			<url>https://imagej.net/User:Hinerm</url>
+			<url>https://imagej.net/people/hinerm</url>
 			<properties><id>hinerm</id></properties>
 		</contributor>
 		<contributor>
 			<name>Samuel Inverso</name>
-			<url>https://imagej.net/User:Sinverso</url>
+			<url>https://imagej.net/people/sinverso</url>
 			<properties><id>sinverso</id></properties>
 		</contributor>
 		<contributor><name>Daren Lee</name></contributor>
 		<contributor>
 			<name>Larry Lindsey</name>
-			<url>https://imagej.net/User:Lindsey</url>
+			<url>https://imagej.net/people/larrylindsey</url>
 			<properties><id>larrylindsey</id></properties>
 		</contributor>
 		<contributor>
 			<name>Mark Longair</name>
-			<url>https://imagej.net/User:Mark</url>
+			<url>https://imagej.net/people/mhl</url>
 			<properties><id>mhl</id></properties>
 		</contributor>
 		<contributor>
 			<name>Jerome Parent</name>
-			<url>https://imagej.net/User:Jejmule</url>
+			<url>https://imagej.net/people/jejmule</url>
 			<properties><id>jejmule</id></properties>
 		</contributor>
 		<contributor>
 			<name>Stephan Preibisch</name>
-			<url>https://imagej.net/User:StephanP</url>
+			<url>https://imagej.net/people/StephanPreibisch</url>
 			<properties><id>StephanPreibisch</id></properties>
 		</contributor>
 		<contributor>
@@ -136,12 +136,12 @@
 		<contributor><name>Ryan Raz</name></contributor>
 		<contributor>
 			<name>Stephan Saalfeld</name>
-			<url>https://imagej.net/User:Saalfeld</url>
+			<url>https://imagej.net/people/axtimwalde</url>
 			<properties><id>axtimwalde</id></properties>
 		</contributor>
 		<contributor>
 			<name>Jean-Yves Tinevez</name>
-			<url>https://imagej.net/User:JeanYvesTinevez</url>
+			<url>https://imagej.net/people/tinevez</url>
 			<properties><id>tinevez</id></properties>
 		</contributor>
 		<contributor><name>Pepijn Van Eeckhoudt</name></contributor>
@@ -224,7 +224,7 @@
 					<!--
 					NB: jython is an unshaded uber-JAR;
 					depending on it brings in duplicate classes.
-					See: https://imagej.net/Uber-JAR
+					See: https://imagej.net/develop/uber-jar
 					-->
 					<groupId>org.python</groupId>
 					<artifactId>jython</artifactId>
