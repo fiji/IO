@@ -288,7 +288,7 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 			return tryPlugIn("sc.fiji.io.Open_DAT_EMMENU", path);
 		}
 
-		// Albert Cardona: read TrakEM2 .xml files
+		// Albert Cardona: read TrakEM2 .xml files or read BigDataViewer .xml file
 		if (name.endsWith(".xml") || name.endsWith(".xml.gz")) {
 			byte[] b = buf;
 			if (name.endsWith("z")) {
@@ -314,6 +314,8 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 					}
 				}
 			}
+
+			// Albert Cardona: TrakEM2 .xml file
 			if (-1 != new String(b).toLowerCase().indexOf("trakem2")) {
 				try {
 					// portable way, resists absence of TrakEM2_.jar in the classpath
@@ -329,6 +331,12 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 					e.printStackTrace();
 				}
 				return null;
+			}
+
+			// Tobias Pietzsch: BigDataViewer .xml file
+			if ( -1 != new String( b ).toLowerCase().indexOf( "<spimdata version=" ) )
+			{
+				return tryPlugIn( "bdv.ij.BigDataViewerPlugIn", path );
 			}
 		}
 
@@ -486,6 +494,11 @@ public class HandleExtraFileTypes extends ImagePlus implements PlugIn {
 			return tryPlugIn("org.janelia.it.fiji.plugins.h5j.H5j_Reader", path);
 		}
 
+		// Tobias Pietzsch, HongKee Moon: open .bdv file with BigDataBrowserPlugIn
+		if ( name.endsWith( ".bdv" ) )
+		{
+			return tryPlugIn( "bdv.ij.BigDataBrowserPlugIn", path );
+		}
 		// ****************** MODIFY HERE ******************
 		// do what ever you have to do to recognise your own file type
 		// and then call appropriate plugin using the above as models
